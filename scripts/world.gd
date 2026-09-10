@@ -8,7 +8,7 @@ func _init(seed_number: int = 0) -> void:
 	data = Seed.create(rng.seed)
 	record("Nate was found unconscious beside a bypassed machine guard. The person responsible is unknown.", ["daniel", "harold", "luis"], "direct observation", false, "important")
 	record("Luis noticed a blank inspection line in the maintenance log before the shift.", ["luis"], "personal observation", false, "important", "luis")
-	story("Line 4's forty-ton hydraulic stamping press is still cycling with a deafening, rhythmic shudder—temperamental German iron that has been threatening to eat an operator since the Carter administration. On the cold concrete floor, twenty-six-year-old Nate Bell is crumpled beneath the housing, motionless. Arterial blood pools dark between the floor drains, soaking through his shredded sleeve where the hydraulic pinch point caught him. A length of stiff copper bailing wire holds the safety guard pinned wide open—the kind of graveyard-shift shortcut guys use to hit company piece-rates without losing their lunch break.\n\nNate is breathing—shallow, wet, ragged gasps. The air reeks of scorched hydraulic oil, iron, and burnt insulation. Behind you, the fire door slams against cinderblock. Harold Voss, your plant manager, steps onto the mezzanine floor, chest heaving and sweat glistening on his temples. Harold hasn't turned a wrench in twenty years, but he can smell an OSHA lawsuit from across the county. His eyes dart straight to the twisted wire on the guard before he even looks down at Nate’s mangled arm.\n\n‘Jesus Christ,’ Harold whispers, his voice shaking with furious panic. ‘That guard wasn’t bypassed when I left tonight.’\n\nYour phone is gripped tight in your hand. You're Daniel Mercer, night shift supervisor, nine years in this rust-bucket plant, and it is 2:10 in the morning.")
+	story("Monday, 2:10 AM. Line 4's forty-ton stamping press is still cycling. Nate Bell is on the concrete beneath it, breathing in shallow, wet gasps. Blood is spreading from his torn sleeve. A copper wire holds the safety guard open.\n\nYou are Daniel Mercer, the night supervisor. Nate got this job because you vouched for him. You told him the crew would look after him. Now your phone feels slippery in your hand.\n\nLuis Ortega reaches the other side of the machine. On your first night in charge, Luis caught a mistake that could have cost you the promotion. He never told Harold. You have trusted him ever since.\n\nThe fire door slams. Harold Voss, the manager who gave you the supervisor's keys, stops at the sight of the wire.\n\n‘That guard wasn't bypassed when I left.’\n\nYou don't know who fitted it. You know Nate is still within reach of the press, and the man who controls your pay has looked at the guard before looking at him.")
 
 func player() -> Dictionary:
 	return data.characters[data.player]
@@ -22,6 +22,7 @@ func record(fact: String, witnesses: Array, source: String = "direct observation
 	for who in witnesses:
 		if data.characters.has(who) and data.characters[who].alive and not actual_witnesses.has(who):
 			actual_witnesses.append(who)
+	actual_witnesses.sort()
 	data.events.append({"id": id, "timestamp": data.minute, "fact": fact, "witnesses": actual_witnesses, "source": source, "is_claim": possibly_false, "subject": subject})
 	for who in actual_witnesses:
 		data.knowledge.append({"fact": fact, "character": who, "source": id + " / " + source, "confidence": 0.65 if possibly_false else 1.0, "timestamp": data.minute, "possibly_false": possibly_false})
@@ -36,6 +37,7 @@ func witnesses(location: String) -> Array:
 	for id in data.characters:
 		if data.characters[id].alive and data.characters[id].location == location and data.characters[id].health > 30:
 			result.append(id)
+	result.sort()
 	return result
 
 func knows(who: String, fragment: String) -> bool:
@@ -66,7 +68,7 @@ func story(text: String) -> void:
 
 func clock_text() -> String:
 	var minute = int(data.minute) % 1440
-	return "DAY %02d   /   %02d:%02d" % [int(data.minute / 1440) + 1, int(minute / 60), minute % 60]
+	return "DAY %02d   /   %s" % [int(data.minute / 1440) + 1, preload("res://scripts/town_schedule.gd").stamp(data.minute)]
 
 func save_world(path: String = "user://world.json") -> Error:
 	# RNG state is a string: JSON floating-point numbers cannot preserve 64 bits.
@@ -86,6 +88,12 @@ func load_world(path: String = "user://world.json") -> Error:
 	if not valid_save(parsed):
 		return ERR_FILE_CORRUPT
 	data = parsed
+	data.locations.merge({"station": "Workplace safety office", "school": "Briar Glen High School", "office": "Millfield accounting office"}, true)
+	data.characters.cole.name = "Investigator Cole"
+	data.characters.cole.occupation = "Workplace safety investigator"
+	for id in data.characters:
+		if id not in ["daniel", "erin", "chloe"]:
+			data.locations["home_" + id] = data.characters[id].name + "'s home"
 	rng.state = int(data.rng_state)
 	return OK
 

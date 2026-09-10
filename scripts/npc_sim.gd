@@ -14,7 +14,8 @@ func simulate(w, minutes_passed: int, before_day: int) -> String:
 	update_routines(w, hour, day)
 	
 	# Only generate ambient observations during genuine town progression
-	if minutes_passed >= 30:
+	if minutes_passed >= 30 and not w.flag("ambient_introduced_" + player_loc):
+		w.data.flags["ambient_introduced_" + player_loc] = true
 		var event = ambient_observation(w, hour, day, player_loc)
 		if not event.is_empty():
 			return event
@@ -24,28 +25,9 @@ func simulate(w, minutes_passed: int, before_day: int) -> String:
 func update_routines(w, hour: int, day: int) -> void:
 	var plant_closed: bool = w.flag("plant_closed")
 	
-	# Harold Voss: Plant manager managing the crisis
-	if w.data.characters.harold.alive and w.data.player != "harold":
-		if hour >= 6 and hour < 19:
-			w.data.characters.harold.location = "plant" if not plant_closed else "diner"
-		else:
-			w.data.characters.harold.location = "home"
-
-	# Matt Mercer: Delivery driver constantly on the move
-	if w.data.characters.matt.alive and w.data.player != "matt":
-		if (hour >= 6 and hour < 11) or (hour >= 14 and hour < 18):
-			w.data.characters.matt.location = "road"
-		elif (hour >= 11 and hour < 14) or (hour >= 18 and hour < 22):
-			w.data.characters.matt.location = "diner"
-		else:
-			w.data.characters.matt.location = "home"
-
-	# Rebecca Shaw: Community support & neighbor
-	if w.data.characters.rebecca.alive and w.data.player != "rebecca":
-		if hour >= 9 and hour < 17:
-			w.data.characters.rebecca.location = "diner"
-		else:
-			w.data.characters.rebecca.location = "home"
+	for actor in ["cole", "chloe", "erin", "nate", "luis", "harold", "matt", "rebecca"]:
+		if actor != w.data.player and w.data.characters[actor].alive:
+			w.data.characters[actor].location = preload("res://scripts/town_schedule.gd").routine_location(w, actor, w.data.minute)
 
 	# Town locals: Working their shift rotations
 	for id in w.data.characters:
@@ -84,9 +66,9 @@ func ambient_observation(w, hour: int, day: int, loc: String) -> String:
 			"Through the double doors of the recovery wing, the sharp reek of floor wax and rubbing alcohol battles with the smell of lukewarm cafeteria coffee."
 		],
 		"station": [
-			"Through the glass partition of the deputy's desk, Officer Cole is tapping an ancient computer keyboard with two index fingers, surrounded by styrofoam coffee cups.",
-			"A county cruiser idles out in the gravel lot, exhaust curling into the damp morning air while a radio dispatcher drones license plate numbers in the background.",
-			"On the station corkboard, an OSHA compliance poster from 2014 hangs pinned crookedly between lost hound notices and sheriff campaign flyers."
+			"A receptionist sorts employer incident reports into dated folders behind the safety office counter.",
+			"An agency car is parked beside the office. A hard hat and inspection equipment sit on the back seat.",
+			"On the safety office corkboard, an OSHA compliance poster from 2014 hangs pinned crookedly between lost hound notices and sheriff campaign flyers."
 		],
 		"home": [
 			"In the living room, the refrigerator compressor kicks on with its familiar shuddering rattle. On the kitchen counter, Chloe’s school lunchbox sits beside an overdue heating bill.",

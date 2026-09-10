@@ -48,8 +48,10 @@ static func daily_tick(w, day: int, _before_day: int) -> Array[String]:
 
 	# Routine household living costs (groceries, routine fuel, domestic overhead)
 	var daily_cost = 24
+	var previous_cash = int(p.finances.cash)
 	p.finances.cash = maxi(0, int(p.finances.cash) - daily_cost)
-	visible.append("Another day has passed. Food and household costs take $24 per day from your available cash.")
+	if previous_cash >= 80 and p.finances.cash < 80:
+		visible.append("After the day's expenses, you have less than $80 in cash. Taking Harold's money is starting to look less like a choice.")
 
 	# Check pending bills maturing into overdue status
 	for id in bills:
@@ -65,11 +67,14 @@ static func daily_tick(w, day: int, _before_day: int) -> Array[String]:
 
 	if bills.has("heating") and bills.heating.status == "overdue" and day >= 5 and not w.flag("heat_cut"):
 		w.data.flags.heat_cut = true
-		visible.append("The radiator pipes in the house are ice cold. The gas utility technician disconnected the meter this morning.")
-		w.relationship("erin", who, "resentment", 15)
+		if w.flag("family_refuge"):
+			visible.append("When the heat cuts out, Chloe uses the spare key Rebecca gave her. Letting someone help has given your daughter somewhere warm to go.")
+		else:
+			visible.append("The heat cuts out. Chloe puts her coat on indoors. There is no arrangement with Rebecca to give her somewhere else to stay.")
+			w.relationship("erin", who, "resentment", 15)
 
 	# Income Waves: Varying financial pressure (no permanent artificial scarcity)
-	if day == 5 and who == "daniel":
+	if day == 4 and who == "daniel":
 		if not w.flag("plant_closed") and not w.flag("fired_daniel"):
 			var paycheck = 360
 			p.finances.cash += paycheck

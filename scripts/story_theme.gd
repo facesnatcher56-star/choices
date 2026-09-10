@@ -6,6 +6,7 @@ const PROSE = Color("cad2c5")
 const MUTED = Color("8b9c9f")
 const GOLD = Color("d4ad72")
 const WARN = Color("d97768")
+const ACCENT = Color("#7eb8da")
 
 const DIALOGUE_COLOR = "#ffe082"
 const ACCENT_COLOR = "#7eb8da"
@@ -37,31 +38,60 @@ static func format_narrative(text: String) -> String:
 
 	return result
 
-static func font_ui(weight: int = 400) -> SystemFont:
+static var _font_cache: Dictionary = {}
+
+static func _get_file_font(path: String) -> FontFile:
+	if _font_cache.has(path):
+		return _font_cache[path]
+	if FileAccess.file_exists(path):
+		var ff = FontFile.new()
+		ff.data = FileAccess.get_file_as_bytes(path)
+		ff.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
+		ff.hinting = TextServer.HINTING_LIGHT
+		ff.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_AUTO
+		_font_cache[path] = ff
+		return ff
+	return null
+
+static func font_ui(weight: int = 400) -> Font:
+	var path = "res://fonts/NotoSans-Bold.ttf" if weight >= 600 else "res://fonts/NotoSans-Regular.ttf"
+	var ff = _get_file_font(path)
+	if ff:
+		return ff
 	var f = SystemFont.new()
-	f.font_names = PackedStringArray(["Segoe UI Variable Text", "Segoe UI", "Inter", "Calibri", "Helvetica Neue", "Arial", "sans-serif"])
+	f.font_names = PackedStringArray(["Noto Sans", "Segoe UI Variable Text", "Segoe UI", "Inter", "Calibri", "Helvetica Neue", "Arial", "sans-serif"])
 	f.font_weight = weight
 	f.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_AUTO
-	f.antialiasing = TextServer.FONT_ANTIALIASING_LCD
+	f.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
 	f.hinting = TextServer.HINTING_LIGHT
 	return f
 
-static func font_serif(weight: int = 400, italic: bool = false) -> SystemFont:
+static func font_serif(weight: int = 400, italic: bool = false) -> Font:
+	var path = "res://fonts/NotoSerif-Regular.ttf"
+	if weight >= 600 and italic:
+		path = "res://fonts/NotoSerif-BoldItalic.ttf"
+	elif weight >= 600:
+		path = "res://fonts/NotoSerif-Bold.ttf"
+	elif italic:
+		path = "res://fonts/NotoSerif-Italic.ttf"
+	var ff = _get_file_font(path)
+	if ff:
+		return ff
 	var f = SystemFont.new()
-	f.font_names = PackedStringArray(["Georgia", "Charter", "Palatino Linotype", "Constantia", "Cambria", "Times New Roman", "serif"])
+	f.font_names = PackedStringArray(["Noto Serif", "Georgia", "Charter", "Palatino Linotype", "Constantia", "Cambria", "Times New Roman", "serif"])
 	f.font_weight = weight
 	if italic:
 		f.font_italic = true
 	f.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_AUTO
-	f.antialiasing = TextServer.FONT_ANTIALIASING_LCD
+	f.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
 	f.hinting = TextServer.HINTING_LIGHT
 	return f
 
-static func font_mono() -> SystemFont:
+static func font_mono() -> Font:
 	var f = SystemFont.new()
 	f.font_names = PackedStringArray(["Cascadia Code", "Consolas", "Courier New", "monospace"])
 	f.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_AUTO
-	f.antialiasing = TextServer.FONT_ANTIALIASING_LCD
+	f.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
 	f.hinting = TextServer.HINTING_LIGHT
 	return f
 
@@ -97,10 +127,34 @@ static func choice_style(color: Color, border: Color = Color.TRANSPARENT, radius
 	s.border_color = border
 	s.set_border_width_all(1)
 	s.set_corner_radius_all(radius)
+	s.content_margin_left = 16
+	s.content_margin_right = 16
+	s.content_margin_top = 12
+	s.content_margin_bottom = 12
+	return s
+
+static func card_style(color: Color = Color("0d1317"), border: Color = Color("1e2a31"), radius: int = 6) -> StyleBoxFlat:
+	var s = StyleBoxFlat.new()
+	s.bg_color = color
+	s.border_color = border
+	s.set_border_width_all(1)
+	s.set_corner_radius_all(radius)
 	s.content_margin_left = 14
 	s.content_margin_right = 14
-	s.content_margin_top = 9
-	s.content_margin_bottom = 9
+	s.content_margin_top = 10
+	s.content_margin_bottom = 10
+	return s
+
+static func pill_style(color: Color, border: Color = Color.TRANSPARENT, radius: int = 4) -> StyleBoxFlat:
+	var s = StyleBoxFlat.new()
+	s.bg_color = color
+	s.border_color = border
+	s.set_border_width_all(1 if border != Color.TRANSPARENT else 0)
+	s.set_corner_radius_all(radius)
+	s.content_margin_left = 8
+	s.content_margin_right = 8
+	s.content_margin_top = 4
+	s.content_margin_bottom = 4
 	return s
 
 static func create() -> Theme:

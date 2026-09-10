@@ -1,4 +1,4 @@
-﻿extends SceneTree
+extends SceneTree
 var failures = 0
 var checks = 0
 
@@ -21,12 +21,13 @@ func exercise() -> void:
 	root.add_child(view)
 	view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	await process_frame
-	check(view.choice_box.get_child_count() == 6, "All scene choices shown directly without quiz pagination")
+	check(view.choice_box.get_child_count() == 3, "All scene choices shown directly without quiz pagination")
 	var has_tooltip = false
 	for btn in view.choice_box.get_children():
 		if not btn.tooltip_text.is_empty():
 			has_tooltip = true
 	check(not has_tooltip, "No tooltip popups on answer hover")
+	check(view.choice_box.get_child(0).text.contains("3m") and view.choice_box.get_child(0).text.contains("Kill the power"), "Action duration and explanation visible before committing")
 	check(view.narrative.text.contains("Nate") and view.narrative.text.contains("stamping press"), "Narrative stream initialized with scene detail")
 	check(not view.menu_controls.is_visible_in_tree(), "Secondary controls hidden while reading")
 	check(not view.status_label.visible, "Routine status text hidden while reading")
@@ -39,6 +40,13 @@ func exercise() -> void:
 	view.panel.hide()
 	check(not view.scrim.visible, "Closing the menu restores story focus")
 	view.choice_box.get_child(0).pressed.emit()
+	await process_frame
+	await process_frame
+	await create_timer(0.45).timeout
+	var outcome_top = int(view.narrative.position.y + view.narrative.get_paragraph_offset(view.newest_story_paragraph))
+	var bar = view.body_scroll.get_v_scroll_bar()
+	var expected_scroll = clampi(outcome_top, 0, maxi(0, int(bar.max_value - bar.page)))
+	check(absi(view.body_scroll.scroll_vertical - expected_scroll) <= 2, "Scroll lands at the start of the outcome (actual %d, expected %d)" % [view.body_scroll.scroll_vertical, expected_scroll])
 	check(view.world.data.scene == "pressure", "Button commits action and transitions scene")
 	check(view.narrative.text.contains("ambulance") or view.narrative.text.contains("›"), "Chosen action appended into continuous stream")
 	check(FileAccess.file_exists("res://tests/ui_checkpoint.json"), "Choice autosaves")

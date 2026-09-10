@@ -4,6 +4,20 @@ const Director = preload("res://scripts/director.gd")
 var failures = 0
 var checks = 0
 
+func first_difference(a, b, path: String = "world") -> String:
+	if a == b:
+		return ""
+	if a is Dictionary and b is Dictionary:
+		for key in a:
+			if not b.has(key): return path + "." + str(key) + " missing"
+			var diff = first_difference(a[key], b[key], path + "." + str(key))
+			if not diff.is_empty(): return diff
+	if a is Array and b is Array and a.size() == b.size():
+		for i in a.size():
+			var diff = first_difference(a[i], b[i], path + "[" + str(i) + "]")
+			if not diff.is_empty(): return diff
+	return path + ": " + str(a).left(200) + " != " + str(b).left(200)
+
 func check(value: bool, message: String) -> void:
 	checks += 1
 	if not value:
@@ -12,8 +26,14 @@ func check(value: bool, message: String) -> void:
 
 func run(d, w, ids: Array) -> void:
 	for id in ids:
-		if w.data.scene == "encounter":
-			check(d.act(w, d.choices(w)[0].id), "Resolve intervening storylet")
+		for attempt in 40:
+			var options: Array = d.choices(w)
+			if w.data.scene == "encounter":
+				check(d.act(w, options[0].id), "Resolve intervening storylet")
+			elif options.any(func(c): return c.id == id):
+				break
+			else:
+				check(d.act(w, "wait_open" if options.any(func(c): return c.id == "wait_open") else "rest"), "Wait for requested activity's available hours")
 		check(d.act(w, id), "Action accepted: " + id + " / " + d.last_error)
 
 func _initialize() -> void:
@@ -27,11 +47,11 @@ func _initialize() -> void:
 	check(JSON.stringify(w.data) == old, "Browsing choices is read-only")
 	check(not d.act(w, "made_up_action"), "Unknown actions rejected")
 	check(JSON.stringify(w.data) == old, "Rejected action cannot mutate state")
-	run(d, w, ["photo", "witness", "lie", "tell"])
+	run(d, w, ["stop", "witness", "lie", "tell"])
 	check(w.knows("erin", "knowingly misled"), "Disclosure informs Erin of lie")
 	check(not w.knows("chloe", "misled"), "Chloe cannot inherit private disclosure")
 	check(not w.knows("cole", "knowingly gave"), "Cole cannot know Daniel’s intent")
-	check(w.knowledge_for("cole").any(func(k): return k.possibly_false), "Cole’s received claim has uncertainty")
+	check(w.knowledge_for("cole").is_empty(), "No investigator has received the overnight report yet")
 	check(w.data.relationships["erin:daniel"].trust < 38, "Erin can love Daniel and lose trust")
 	run(d, w, ["rest", "rest", "investigate", "rest", "rest", "rest", "rest", "rest", "rest", "rest"])
 	check(w.flag("luis_spoke"), "Witness acts autonomously")
@@ -50,6 +70,8 @@ func _initialize() -> void:
 	run(d, w, ["rest"])
 	run(d, loaded, ["rest"])
 	check(JSON.parse_string(JSON.stringify(w.data)) == JSON.parse_string(JSON.stringify(loaded.data)), "Loaded world continues identically")
+	if JSON.parse_string(JSON.stringify(w.data)) != JSON.parse_string(JSON.stringify(loaded.data)):
+		printerr(first_difference(JSON.parse_string(JSON.stringify(w.data)), JSON.parse_string(JSON.stringify(loaded.data))))
 	check(w.save_world(path) == OK, "Existing save replaced atomically")
 	var bad: Dictionary = JSON.parse_string(JSON.stringify(w.data))
 	bad.characters.erin.health = "not a number"
@@ -111,7 +133,7 @@ func _initialize() -> void:
 	check(Finances.total_debt(fw) == 0, "Starting debt initialized with zero debt")
 	check(Finances.bills_due(fw) == 80, "Initial bills due is $80 heating bill")
 	check(Finances.status_line(fw) == "Available $420  ·  Debt $0  ·  Bills due $80", "Minimal status line formatted correctly")
-	run(d, fw, ["photo", "witness", "truth", "tell"])
+	run(d, fw, ["stop", "photo", "truth", "tell"])
 	check(d.choices(fw).any(func(c): return c.id == "bills_credit"), "Credit card payment alternative available")
 	check(d.act(fw, "bills_credit"), "Pay bill with credit card succeeds")
 	check(Finances.bills_due(fw) == 0, "Heating bill cleared via credit")
@@ -120,6 +142,7 @@ func _initialize() -> void:
 	fw.player().finances.cash = 0
 	fw.data.scene = "encounter"
 	fw.data.flags.encounter = "school"
+	fw.data.minute = 1440 + 16 * 60
 	var school_choices = d.choices(fw)
 	check(school_choices.size() >= 4, "All encounter choices offered even with $0 cash (no hard lock)")
 	check(d.act(fw, "pay"), "Pay choice resolves gracefully with $0 cash into credit/owed balance")

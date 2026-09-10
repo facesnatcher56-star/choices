@@ -10,6 +10,9 @@ static func propagate(w) -> Array[String]:
 		var c: Dictionary = w.data.characters[id]
 		if not c.alive or c.health <= 25:
 			continue
+		# No conversations between sleeping residents or during the emergency opening.
+		if w.data.scene != "town" or not preload("res://scripts/town_schedule.gd").person_available(id, w.data.minute, 0):
+			continue
 		var loc: String = c.location
 		if not by_location.has(loc):
 			by_location[loc] = []
@@ -29,6 +32,8 @@ static func propagate(w) -> Array[String]:
 		var b_idx = (a_idx + 1 + (w.rng.randi() % (people.size() - 1))) % people.size()
 		var a_id: String = people[a_idx]
 		var b_id: String = people[b_idx]
+		if a_id == w.data.player:
+			continue # The player's disclosures are choices, not random background actions.
 		
 		# Never simulate player talking to player
 		if a_id == w.data.player and b_id == w.data.player:
@@ -46,6 +51,8 @@ static func propagate(w) -> Array[String]:
 			
 		# Pick a memory of interest to share
 		var candidate = a_memories[w.rng.randi() % a_memories.size()]
+		if "private" in str(candidate.source):
+			continue
 		var fact: String = candidate.fact
 		
 		# If listener already knows this, skip

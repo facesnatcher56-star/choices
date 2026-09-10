@@ -16,9 +16,17 @@ var title_label: Label
 var context_label: Label
 var finance_label: Label
 var finance_sidebar: VBoxContainer
+var schedule_day_label: Label
+var schedule_clock_label: Label
+var schedule_period_badge: Label
+var schedule_anchor_title: Label
+var schedule_free_label: Label
+var schedule_condition_badge: Label
 var finance_cash_label: Label
 var finance_debt_label: Label
+var finance_credit_label: Label
 var finance_bills_container: VBoxContainer
+var finance_settled_container: VBoxContainer
 var page_margin: MarginContainer
 var menu_controls: VBoxContainer
 var menu_summary: Label
@@ -35,6 +43,8 @@ var inspector_picker: OptionButton
 var inspector_mode: OptionButton
 var body_scroll: ScrollContainer
 var live_choices: Array = []
+var show_practical = false
+var newest_story_paragraph = 0
 var confirm: ConfirmationDialog
 
 func _ready() -> void:
@@ -71,35 +81,151 @@ func quiet_button(text: String, callback: Callable) -> Button:
 	return b
 
 func build_finance_sidebar() -> void:
-	finance_sidebar.custom_minimum_size.x = 210
+	finance_sidebar.custom_minimum_size.x = 240
 	finance_sidebar.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	var f_title = label("FINANCES", 16, StoryTheme.GOLD, 700)
-	finance_sidebar.add_child(f_title)
+	# 0. Schedule & Commitment Card
+	var panel_schedule = PanelContainer.new()
+	panel_schedule.add_theme_stylebox_override("panel", StoryTheme.card_style(Color("0f1519"), Color("223038"), 8))
+	panel_schedule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	finance_sidebar.add_child(panel_schedule)
+
+	var sched_vbox = VBoxContainer.new()
+	sched_vbox.add_theme_constant_override("separation", 6)
+	panel_schedule.add_child(sched_vbox)
+
+	var sched_top_hdr = HBoxContainer.new()
+	sched_vbox.add_child(sched_top_hdr)
+	var sched_title = label("SCHEDULE", 13, StoryTheme.GOLD, 700)
+	sched_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sched_top_hdr.add_child(sched_title)
+
+	schedule_period_badge = Label.new()
+	schedule_period_badge.add_theme_font_override("font", StoryTheme.font_ui(600))
+	schedule_period_badge.add_theme_font_size_override("font_size", 10)
+	schedule_period_badge.add_theme_stylebox_override("normal", StoryTheme.pill_style(Color("1b252c"), Color("32434e"), 3))
+	schedule_period_badge.add_theme_color_override("font_color", StoryTheme.ACCENT)
+	sched_top_hdr.add_child(schedule_period_badge)
+
+	var time_box = VBoxContainer.new()
+	time_box.add_theme_constant_override("separation", 1)
+	sched_vbox.add_child(time_box)
+
+	schedule_day_label = label("DAY 1 · MONDAY", 12, MUTED, 600)
+	time_box.add_child(schedule_day_label)
+
+	schedule_clock_label = label("02:10 AM", 24, INK, 700)
+	time_box.add_child(schedule_clock_label)
+
+	var sched_sep1 = ColorRect.new()
+	sched_sep1.custom_minimum_size = Vector2(0, 1)
+	sched_sep1.color = Color("1e2a31")
+	sched_vbox.add_child(sched_sep1)
+
+	var commit_box = VBoxContainer.new()
+	commit_box.add_theme_constant_override("separation", 2)
+	sched_vbox.add_child(commit_box)
+
+	var commit_hdr = label("NEXT COMMITMENT", 11, MUTED, 600)
+	commit_box.add_child(commit_hdr)
+
+	schedule_anchor_title = label("Night Shift · 21:00", 13, INK, 600)
+	schedule_anchor_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	commit_box.add_child(schedule_anchor_title)
+
+	schedule_free_label = label("18h 50m free time", 12, StoryTheme.ACCENT, 600)
+	commit_box.add_child(schedule_free_label)
+
+	var sched_sep2 = ColorRect.new()
+	sched_sep2.custom_minimum_size = Vector2(0, 1)
+	sched_sep2.color = Color("1e2a31")
+	sched_vbox.add_child(sched_sep2)
+
+	var cond_box = HBoxContainer.new()
+	sched_vbox.add_child(cond_box)
+	var cond_hdr = label("CONDITION", 11, MUTED, 600)
+	cond_hdr.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cond_box.add_child(cond_hdr)
+
+	schedule_condition_badge = Label.new()
+	schedule_condition_badge.add_theme_font_override("font", StoryTheme.font_ui(600))
+	schedule_condition_badge.add_theme_font_size_override("font_size", 10)
+	cond_box.add_child(schedule_condition_badge)
+
+	# 1. Main Financial Overview Card
+	var panel_overview = PanelContainer.new()
+	panel_overview.add_theme_stylebox_override("panel", StoryTheme.card_style(Color("0f1519"), Color("223038"), 8))
+	panel_overview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	finance_sidebar.add_child(panel_overview)
+
+	var overview_vbox = VBoxContainer.new()
+	overview_vbox.add_theme_constant_override("separation", 8)
+	panel_overview.add_child(overview_vbox)
+
+	var top_hdr = HBoxContainer.new()
+	overview_vbox.add_child(top_hdr)
+	var f_title = label("FINANCES", 13, StoryTheme.GOLD, 700)
+	f_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_hdr.add_child(f_title)
 
 	var cash_box = VBoxContainer.new()
-	cash_box.add_theme_constant_override("separation", 2)
-	finance_sidebar.add_child(cash_box)
-	var cash_sub = label("AVAILABLE CASH", 14, MUTED, 600)
+	cash_box.add_theme_constant_override("separation", 1)
+	overview_vbox.add_child(cash_box)
+	var cash_sub = label("AVAILABLE CASH", 12, MUTED, 600)
 	cash_box.add_child(cash_sub)
-	finance_cash_label = label("$420", 32, INK, 700)
+	finance_cash_label = label("$420", 28, INK, 700)
 	cash_box.add_child(finance_cash_label)
+
+	var sep1 = ColorRect.new()
+	sep1.custom_minimum_size = Vector2(0, 1)
+	sep1.color = Color("1e2a31")
+	overview_vbox.add_child(sep1)
 
 	var debt_box = VBoxContainer.new()
 	debt_box.add_theme_constant_override("separation", 2)
-	finance_sidebar.add_child(debt_box)
-	var debt_sub = label("TOTAL DEBT", 14, MUTED, 600)
-	debt_box.add_child(debt_sub)
-	finance_debt_label = label("$0", 26, StoryTheme.MUTED, 700)
+	overview_vbox.add_child(debt_box)
+	var debt_hdr = HBoxContainer.new()
+	debt_box.add_child(debt_hdr)
+	var debt_sub = label("TOTAL DEBT", 12, MUTED, 600)
+	debt_sub.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	debt_hdr.add_child(debt_sub)
+	finance_credit_label = label("Limit $2,500", 11, Color("6c7d84"), 400)
+	debt_hdr.add_child(finance_credit_label)
+
+	finance_debt_label = label("$0", 22, StoryTheme.MUTED, 700)
 	debt_box.add_child(finance_debt_label)
 
-	var sep = ColorRect.new()
-	sep.custom_minimum_size = Vector2(0, 1)
-	sep.color = Color("1c282e")
-	finance_sidebar.add_child(sep)
+	var sep2 = ColorRect.new()
+	sep2.custom_minimum_size = Vector2(0, 1)
+	sep2.color = Color("1e2a31")
+	overview_vbox.add_child(sep2)
 
-	var bills_title = label("UPCOMING BILLS", 15, StoryTheme.GOLD, 600)
-	finance_sidebar.add_child(bills_title)
+	var rates_box = VBoxContainer.new()
+	rates_box.add_theme_constant_override("separation", 3)
+	overview_vbox.add_child(rates_box)
+
+	var daily_row = HBoxContainer.new()
+	rates_box.add_child(daily_row)
+	var daily_tag = label("Daily Living", 11, MUTED, 500)
+	daily_tag.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	daily_row.add_child(daily_tag)
+	var daily_val = label("-$24 / day", 11, Color("94a3b8"), 600)
+	daily_row.add_child(daily_val)
+
+	var shift_row = HBoxContainer.new()
+	rates_box.add_child(shift_row)
+	var shift_tag = label("Shift Wage", 11, MUTED, 500)
+	shift_tag.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	shift_row.add_child(shift_tag)
+	var shift_val = label("+$112 / shift", 11, Color("94a3b8"), 600)
+	shift_row.add_child(shift_val)
+
+	# 2. Upcoming Obligations Header
+	var bills_hdr_box = HBoxContainer.new()
+	finance_sidebar.add_child(bills_hdr_box)
+	var bills_title = label("UPCOMING BILLS", 13, StoryTheme.GOLD, 700)
+	bills_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bills_hdr_box.add_child(bills_title)
 
 	var bills_scroll = ScrollContainer.new()
 	bills_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -107,17 +233,60 @@ func build_finance_sidebar() -> void:
 	bills_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	finance_sidebar.add_child(bills_scroll)
 
+	var bills_outer = VBoxContainer.new()
+	bills_outer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bills_outer.add_theme_constant_override("separation", 10)
+	bills_scroll.add_child(bills_outer)
+
 	finance_bills_container = VBoxContainer.new()
 	finance_bills_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	finance_bills_container.add_theme_constant_override("separation", 10)
-	bills_scroll.add_child(finance_bills_container)
+	finance_bills_container.add_theme_constant_override("separation", 8)
+	bills_outer.add_child(finance_bills_container)
+
+	finance_settled_container = VBoxContainer.new()
+	finance_settled_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	finance_settled_container.add_theme_constant_override("separation", 4)
+	bills_outer.add_child(finance_settled_container)
 
 func update_finance_sidebar() -> void:
+	var sched = preload("res://scripts/town_schedule.gd").schedule_anchor(world)
+	if schedule_day_label:
+		schedule_day_label.text = str(sched.get("day_text", "DAY 1 · MONDAY"))
+	if schedule_clock_label:
+		schedule_clock_label.text = str(sched.get("clock_text", "02:10"))
+	if schedule_period_badge:
+		schedule_period_badge.text = " " + str(sched.get("period", "NIGHT")) + " "
+	if schedule_anchor_title:
+		var atime = str(sched.get("anchor_time", ""))
+		schedule_anchor_title.text = str(sched.get("anchor_title", "")) + (" · " + atime if atime != "--:--" else "")
+	if schedule_free_label:
+		schedule_free_label.text = str(sched.get("free_text", ""))
+		if sched.get("is_overdue", false):
+			schedule_free_label.add_theme_color_override("font_color", StoryTheme.WARN)
+		else:
+			schedule_free_label.add_theme_color_override("font_color", StoryTheme.ACCENT)
+	if schedule_condition_badge:
+		var ftag = str(sched.get("fatigue_tag", "Well-rested"))
+		var fatigue = int(sched.get("fatigue", 0))
+		schedule_condition_badge.text = " " + ftag.to_upper() + " "
+		if fatigue > 75:
+			schedule_condition_badge.add_theme_stylebox_override("normal", StoryTheme.pill_style(Color("3b1816"), StoryTheme.WARN, 3))
+			schedule_condition_badge.add_theme_color_override("font_color", StoryTheme.WARN)
+		elif fatigue > 50:
+			schedule_condition_badge.add_theme_stylebox_override("normal", StoryTheme.pill_style(Color("382914"), StoryTheme.GOLD, 3))
+			schedule_condition_badge.add_theme_color_override("font_color", StoryTheme.GOLD)
+		else:
+			schedule_condition_badge.add_theme_stylebox_override("normal", StoryTheme.pill_style(Color("16241d"), Color("388e3c"), 3))
+			schedule_condition_badge.add_theme_color_override("font_color", Color("81c784"))
+
 	var p = world.player()
 	var cash = int(p.finances.get("cash", 0))
 	var debt = int(p.finances.get("debt", 0))
+	var limit = Finances.credit_limit(world)
 	finance_cash_label.text = "$%d" % cash
 	finance_debt_label.text = "$%d" % debt
+	if finance_credit_label:
+		finance_credit_label.text = "Limit $%d" % limit
 	if debt > 0:
 		finance_debt_label.add_theme_color_override("font_color", StoryTheme.WARN)
 	else:
@@ -125,61 +294,109 @@ func update_finance_sidebar() -> void:
 
 	for c in finance_bills_container.get_children():
 		c.queue_free()
+	for c in finance_settled_container.get_children():
+		c.queue_free()
 
 	var bills = Finances.ensure_bills(world)
 	var current_day = int(world.data.minute / 1440) + 1
-	var has_bills = false
+	var has_pending = false
+	var has_settled = false
+
 	for id in bills:
 		var b = bills[id]
 		var status = b.get("status", "unpaid")
 		var amount = int(b.get("amount", 0))
 		var due_day = int(b.get("due_day", 1))
 
-		var item = VBoxContainer.new()
-		item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		item.add_theme_constant_override("separation", 2)
+		if status in ["unpaid", "overdue", "pending"]:
+			has_pending = true
+			var is_overdue = (due_day < current_day or status == "overdue")
+			var is_today = (due_day == current_day and not is_overdue)
 
-		var title_lbl = Label.new()
-		title_lbl.text = b.get("title", id.capitalize())
-		title_lbl.add_theme_font_override("font", StoryTheme.font_ui(600))
-		title_lbl.add_theme_font_size_override("font_size", 16)
-		title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var card = PanelContainer.new()
+			var border_color = StoryTheme.WARN if is_overdue else (StoryTheme.GOLD if is_today else Color("1e2a31"))
+			card.add_theme_stylebox_override("panel", StoryTheme.card_style(Color("0e1418"), border_color, 6))
+			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-		var detail_lbl = Label.new()
-		detail_lbl.add_theme_font_override("font", StoryTheme.font_ui(400))
-		detail_lbl.add_theme_font_size_override("font_size", 15)
-		detail_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var card_vbox = VBoxContainer.new()
+			card_vbox.add_theme_constant_override("separation", 5)
+			card.add_child(card_vbox)
 
-		if status in ["unpaid", "overdue"]:
-			has_bills = true
-			if due_day < current_day or status == "overdue":
-				title_lbl.add_theme_color_override("font_color", StoryTheme.WARN)
-				detail_lbl.text = "OVERDUE  ·  $%d" % amount
-				detail_lbl.add_theme_color_override("font_color", StoryTheme.WARN)
-			elif due_day == current_day:
-				title_lbl.add_theme_color_override("font_color", StoryTheme.GOLD)
-				detail_lbl.text = "Due today  ·  $%d" % amount
-				detail_lbl.add_theme_color_override("font_color", StoryTheme.GOLD)
+			var title_lbl = Label.new()
+			title_lbl.text = b.get("title", id.capitalize())
+			title_lbl.add_theme_font_override("font", StoryTheme.font_ui(600))
+			title_lbl.add_theme_font_size_override("font_size", 14)
+			title_lbl.add_theme_color_override("font_color", INK if not is_overdue else StoryTheme.WARN)
+			title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			card_vbox.add_child(title_lbl)
+
+			var sub_row = HBoxContainer.new()
+			sub_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			card_vbox.add_child(sub_row)
+
+			var badge = Label.new()
+			badge.add_theme_font_override("font", StoryTheme.font_ui(600))
+			badge.add_theme_font_size_override("font_size", 11)
+			if is_overdue:
+				badge.text = " OVERDUE "
+				badge.add_theme_stylebox_override("normal", StoryTheme.pill_style(Color("3b1816"), StoryTheme.WARN, 3))
+				badge.add_theme_color_override("font_color", StoryTheme.WARN)
+			elif is_today:
+				badge.text = " DUE TODAY "
+				badge.add_theme_stylebox_override("normal", StoryTheme.pill_style(Color("2e2413"), StoryTheme.GOLD, 3))
+				badge.add_theme_color_override("font_color", StoryTheme.GOLD)
 			else:
-				title_lbl.add_theme_color_override("font_color", INK)
-				detail_lbl.text = "Due Day %d  ·  $%d" % [due_day, amount]
-				detail_lbl.add_theme_color_override("font_color", MUTED)
-			item.add_child(title_lbl)
-			item.add_child(detail_lbl)
-			finance_bills_container.add_child(item)
-		elif status == "pending":
-			has_bills = true
-			title_lbl.add_theme_color_override("font_color", MUTED)
-			detail_lbl.text = "Due Day %d  ·  $%d" % [due_day, amount]
-			detail_lbl.add_theme_color_override("font_color", MUTED)
-			item.add_child(title_lbl)
-			item.add_child(detail_lbl)
-			finance_bills_container.add_child(item)
+				badge.text = " DUE DAY %d " % due_day
+				badge.add_theme_stylebox_override("normal", StoryTheme.pill_style(Color("161f25"), Color("2d3d47"), 3))
+				badge.add_theme_color_override("font_color", MUTED)
+			badge.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+			sub_row.add_child(badge)
 
-	if not has_bills:
-		var empty_lbl = label("No bills pending.", 11, MUTED)
+			var space = Control.new()
+			space.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			sub_row.add_child(space)
+
+			var amt_lbl = Label.new()
+			amt_lbl.text = "$%d" % amount
+			amt_lbl.add_theme_font_override("font", StoryTheme.font_ui(700))
+			amt_lbl.add_theme_font_size_override("font_size", 15)
+			amt_lbl.add_theme_color_override("font_color", StoryTheme.WARN if is_overdue else (StoryTheme.GOLD if is_today else INK))
+			sub_row.add_child(amt_lbl)
+
+			finance_bills_container.add_child(card)
+
+		elif status == "paid":
+			has_settled = true
+			var settled_row = HBoxContainer.new()
+			settled_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+			var check_lbl = Label.new()
+			check_lbl.text = "✓ " + str(b.get("title", id.capitalize()))
+			check_lbl.add_theme_font_override("font", StoryTheme.font_ui(500))
+			check_lbl.add_theme_font_size_override("font_size", 12)
+			check_lbl.add_theme_color_override("font_color", Color("688a64"))
+			check_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			check_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			settled_row.add_child(check_lbl)
+
+			var paid_val = Label.new()
+			paid_val.text = "Paid"
+			paid_val.add_theme_font_override("font", StoryTheme.font_ui(500))
+			paid_val.add_theme_font_size_override("font_size", 11)
+			paid_val.add_theme_color_override("font_color", Color("688a64"))
+			settled_row.add_child(paid_val)
+
+			finance_settled_container.add_child(settled_row)
+
+	if not has_pending:
+		var empty_lbl = label("No active bills pending.", 12, MUTED)
 		finance_bills_container.add_child(empty_lbl)
+
+	if has_settled:
+		var settled_title = label("SETTLED OBLIGATIONS", 11, Color("5b7458"), 700)
+		finance_settled_container.add_child(settled_title)
+		finance_settled_container.move_child(settled_title, 0)
 
 func build_screen() -> void:
 	page_margin = MarginContainer.new()
@@ -240,8 +457,9 @@ func build_screen() -> void:
 
 	var body_margin = MarginContainer.new()
 	body_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	body_margin.add_theme_constant_override("margin_top", 16)
-	body_margin.add_theme_constant_override("margin_bottom", 44)
+	body_margin.add_theme_constant_override("margin_top", 20)
+	body_margin.add_theme_constant_override("margin_bottom", 48)
+	body_margin.add_theme_constant_override("margin_left", 8)
 	body_margin.add_theme_constant_override("margin_right", 16)
 	body_scroll.add_child(body_margin)
 
@@ -250,31 +468,7 @@ func build_screen() -> void:
 	body.add_theme_constant_override("separation", 22)
 	body_margin.add_child(body)
 
-	var top_fade = TextureRect.new()
-	top_fade.texture = StoryTheme.create_fade_texture(true)
-	top_fade.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	top_fade.anchor_left = 0
-	top_fade.anchor_right = 1
-	top_fade.anchor_top = 0
-	top_fade.anchor_bottom = 0
-	top_fade.offset_top = 0
-	top_fade.offset_bottom = 28
-	top_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	scroll_wrapper.add_child(top_fade)
-
-	var bottom_fade = TextureRect.new()
-	bottom_fade.texture = StoryTheme.create_fade_texture(false)
-	bottom_fade.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	bottom_fade.anchor_left = 0
-	bottom_fade.anchor_right = 1
-	bottom_fade.anchor_top = 1
-	bottom_fade.anchor_bottom = 1
-	bottom_fade.offset_top = -24
-	bottom_fade.offset_bottom = 0
-	bottom_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	scroll_wrapper.add_child(bottom_fade)
-
-	title_label = label("", 36, INK)
+	title_label = label("", 34, INK)
 	title_label.add_theme_font_override("font", StoryTheme.font_serif(700))
 	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	body.add_child(title_label)
@@ -291,11 +485,11 @@ func build_screen() -> void:
 	narrative.add_theme_font_override("bold_font", StoryTheme.font_serif(700))
 	narrative.add_theme_font_override("italics_font", StoryTheme.font_serif(400, true))
 	narrative.add_theme_font_override("bold_italics_font", StoryTheme.font_serif(700, true))
-	narrative.add_theme_font_size_override("normal_font_size", 26)
-	narrative.add_theme_font_size_override("bold_font_size", 26)
-	narrative.add_theme_font_size_override("italics_font_size", 26)
-	narrative.add_theme_font_size_override("bold_italics_font_size", 26)
-	narrative.add_theme_constant_override("line_separation", 10)
+	narrative.add_theme_font_size_override("normal_font_size", 24)
+	narrative.add_theme_font_size_override("bold_font_size", 24)
+	narrative.add_theme_font_size_override("italics_font_size", 24)
+	narrative.add_theme_font_size_override("bold_italics_font_size", 24)
+	narrative.add_theme_constant_override("line_separation", 14)
 	body.add_child(narrative)
 
 	var breath = Control.new()
@@ -416,7 +610,7 @@ func build_panel() -> void:
 func refresh() -> void:
 	var p: Dictionary = world.player()
 	var minute = int(world.data.minute) % 1440
-	context_label.text = "%s  ·  %s  ·  Day %d, %02d:%02d" % [p.name, world.data.locations[p.location], int(world.data.minute / 1440) + 1, int(minute / 60), minute % 60]
+	context_label.text = "%s  ·  %s  ·  Day %d, %s" % [p.name, world.data.locations[p.location], int(world.data.minute / 1440) + 1, preload("res://scripts/town_schedule.gd").stamp(world.data.minute)]
 	finance_label.text = Finances.status_line(world)
 	update_finance_sidebar()
 	status_label.hide()
@@ -428,6 +622,8 @@ func refresh() -> void:
 	var stream: Array[String] = []
 	for i in range(world.data.story_log.size()):
 		var entry: Dictionary = world.data.story_log[i]
+		if i == world.data.story_log.size() - 1:
+			newest_story_paragraph = "\n\n".join(stream).count("\n") + (2 if not stream.is_empty() else 0)
 		if entry.has("action") and not str(entry.action).is_empty():
 			stream.append("[color=" + StoryTheme.GOLD_COLOR + "]› [i]" + entry.action + "[/i][/color]\n")
 		var formatted: String = StoryTheme.format_narrative(entry.text)
@@ -438,13 +634,15 @@ func refresh() -> void:
 		choice_box.remove_child(c)
 		c.queue_free()
 
-	live_choices = director.choices(world)
+	var all_choices = director.choices(world)
+	var has_practical = all_choices.any(func(c): return c.get("secondary", false))
+	live_choices = all_choices if show_practical else all_choices.filter(func(c): return not c.get("secondary", false))
 
 	# Present all active choices cleanly without quiz-style pagination, clipping, or hover popups
 	for i in range(live_choices.size()):
 		var c: Dictionary = live_choices[i]
 		var b = Button.new()
-		b.text = "›  " + c.label
+		b.text = "›  " + c.label + "\n" + duration(c.minutes) + " · " + c.why
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -460,7 +658,8 @@ func refresh() -> void:
 		b.add_theme_stylebox_override("focus", StoryTheme.choice_style(Color("0f181e"), StoryTheme.GOLD))
 		b.pressed.connect(choose.bind(c.id))
 		choice_box.add_child(b)
-	alternate_button.hide()
+	alternate_button.visible = has_practical
+	alternate_button.text = "Hide travel and practical matters" if show_practical else "Travel and practical matters"
 
 func duration(minutes: int) -> String:
 	return "%dm" % minutes if minutes < 60 else "%dh %02dm" % [int(minutes / 60), minutes % 60]
@@ -473,6 +672,7 @@ func choose(id: String) -> void:
 		status_label.show()
 		return
 	page = 0
+	show_practical = false
 	refresh()
 	scroll_down()
 	autosave()
@@ -481,7 +681,8 @@ func scroll_down() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var v_bar = body_scroll.get_v_scroll_bar()
-	var target = int(v_bar.max_value)
+	var target = int(narrative.position.y + narrative.get_paragraph_offset(newest_story_paragraph))
+	target = clampi(target, 0, maxi(0, int(v_bar.max_value - v_bar.page)))
 	var tween = create_tween()
 	if tween:
 		tween.tween_property(body_scroll, "scroll_vertical", target, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -489,6 +690,7 @@ func scroll_down() -> void:
 		body_scroll.scroll_vertical = target
 
 func next_page() -> void:
+	show_practical = not show_practical
 	refresh()
 
 func autosave() -> void:

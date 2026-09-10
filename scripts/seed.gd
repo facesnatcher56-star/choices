@@ -2,7 +2,7 @@ extends RefCounted
 const WorldTruths = preload("res://scripts/world_truths.gd")
 
 static func create(seed_number: int) -> Dictionary:
-	var d = {"schema": 1, "seed": seed_number, "rng_state": 0, "minute": 130, "turn": 0, "player": "daniel", "scene": "accident", "flags": {}, "characters": {}, "relationships": {}, "events": [], "knowledge": [], "memories": [], "objects": {}, "story_log": [], "intentions": [], "deaths": [], "locations": {"plant": "Mercer Works", "home": "Mercer house", "hospital": "St. Anne’s Hospital", "station": "Police station", "diner": "Juniper Diner", "road": "County road"}, "truths": WorldTruths.generate(seed_number)}
+	var d = {"schema": 1, "seed": seed_number, "rng_state": 0, "minute": 130, "turn": 0, "player": "daniel", "scene": "accident", "flags": {}, "characters": {}, "relationships": {}, "events": [], "knowledge": [], "memories": [], "objects": {}, "story_log": [], "intentions": [], "deaths": [], "locations": {"plant": "Mercer Works", "home": "Mercer house", "hospital": "St. Anne’s Hospital", "station": "Workplace safety office", "diner": "Juniper Diner", "road": "County road", "school": "Briar Glen High School", "office": "Millfield accounting office"}, "truths": WorldTruths.generate(seed_number)}
 	var cast = [
 		["daniel", "Daniel Mercer", 34, "Night supervisor", "plant", "Keep the family solvent", "Losing his job"],
 		["erin", "Erin Mercer", 33, "Bookkeeper", "home", "Repair the marriage; get Chloe to school", "Financial dependence"],
@@ -12,12 +12,16 @@ static func create(seed_number: int) -> Dictionary:
 		["luis", "Luis Ortega", 36, "Machine operator", "plant", "Protect coworkers", "Retaliation"],
 		["nate", "Nate Bell", 26, "Machine operator", "plant", "Recover and keep his income", "Permanent injury"],
 		["rebecca", "Rebecca Shaw", 41, "Librarian / neighbor", "home", "Help Erin without intruding", "Breaking a confidence"],
-		["cole", "Officer Cole", 44, "Investigator", "station", "Establish what happened", "Missing evidence"]]
+		["cole", "Investigator Cole", 44, "Workplace safety investigator", "station", "Establish what happened", "Missing evidence"]]
 	var names = ["June Adler", "Sam Brooks", "Ava Chen", "Eli Davis", "Rosa Ellis", "Ben Foster", "Grace Hall", "Owen Irwin", "Maya James", "Paul Kent", "Leah Lane", "Ian Moss", "Nora Nash", "Dean Owens", "Tess Price", "Amir Quinn", "Joy Reed", "Seth Stone", "Ada Turner", "Cal West", "Zoe Young"]
 	for i in names.size():
 		cast.append(["local_%d" % i, names[i], 25 + i, ["Nurse", "Mechanic", "Shopkeeper", "Teacher", "Plant worker"][i % 5], ["hospital", "plant", "diner", "home"][i % 4], "Maintain a stable life", "Losing security"])
 	for row in cast:
 		d.characters[row[0]] = {"id": row[0], "name": row[1], "age": row[2], "occupation": row[3], "location": row[4], "alive": true, "health": 100, "fatigue": 20, "conditions": ["exhausted"] if row[0] == "daniel" else [], "personality": {"caution": 0.6, "loyalty": 0.7}, "possessions": [], "finances": {"cash": 420, "debt": 0}, "goals": [row[5]], "fears": [row[6]], "secrets": [], "beliefs": []}
+		if row[0] not in ["daniel", "erin", "chloe"]:
+			d.locations["home_" + row[0]] = row[1] + "'s home"
+			if row[4] == "home" or row[0] == "cole":
+				d.characters[row[0]].location = "home_" + row[0]
 	for a in d.characters:
 		for b in d.characters:
 			if a != b:
