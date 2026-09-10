@@ -42,11 +42,24 @@ func town_choices(w) -> Array:
 	var who: String = w.data.player
 	var loc: String = w.player().location
 
+	var talked_family = w.flag("talked_family_day_" + str(day))
+	var visited_nate = w.flag("visited_nate_day_" + str(day))
+	var interviewed_cole = w.flag("interviewed_cole_day_" + str(day))
+	var talked_matt = w.flag("talked_matt_day_" + str(day))
+	var talked_luis = w.flag("talked_luis_day_" + str(day))
+	var talked_neighbor = w.flag("talked_neighbor_day_" + str(day))
+	var saw_doctor = w.flag("saw_doctor_day_" + str(day))
+	var drove_today = w.flag("drove_today_" + str(day))
+	var checked_records = w.flag("records_" + who)
+	var corrected_lie = w.flag("corrected")
+	var reviewed_job = w.flag("job_accepted") or w.flag("job_reviewed")
+	var worked_today = int(w.data.flags.get("worked_" + who, -1)) == day
+
 	match loc:
 		"home":
-			# Immediate domestic actions in the house
+			# Rest is always available at home
 			a.append(option("rest", "Try to wash up and get some sleep.", 480, "Rest restores health and reduces fatigue in your own bed."))
-			if w.data.characters.erin.alive and who != "erin":
+			if w.data.characters.erin.alive and who != "erin" and not talked_family:
 				a.append(option("family", "Stay at the kitchen table and talk with Erin.", 90, "Erin is carrying the weight of the household and Nate’s accident."))
 			var bills = Finances.ensure_bills(w)
 			if bills.has("heating") and bills.heating.status in ["unpaid", "overdue"] and int(w.data.flags.get("paid_bills_day", -1)) != day:
@@ -59,104 +72,103 @@ func town_choices(w) -> Array:
 			if day >= 2 and not w.flag("truck_fixed") and who == "daniel":
 				a.append(option("truck_diy", "Pull a salvage alternator at the scrapyard and install it yourself.", 180, "Saves cash (only $35 parts). Trades 3 hours of daylight and leaves you exhausted."))
 				a.append(option("truck_shop", "Pay Jim at the garage $140 to replace the truck alternator.", 60, "Professional repair; costs $140 in cash or credit, but saves your afternoon."))
-			if who == "erin" and not w.flag("job_accepted"):
+			if who == "erin" and not reviewed_job:
 				a.append(option("job", "Review the out-of-town job application.", 150, "Erin’s private goal to regain financial stability."))
 			# Venturing out: focused, realistic plot destinations
-			if w.data.characters.nate.alive and who != "nate":
+			if w.data.characters.nate.alive and who != "nate" and not visited_nate:
 				a.append(option("visit", "Drive to St. Anne’s Hospital to check if Nate survived.", 90, "Nate is in trauma recovery; a visit lets you see him firsthand."))
-			# Detective Cole: available during daytime investigation hours or when scheduled
-			if w.data.characters.cole.alive and who != "cole":
+			if w.data.characters.cole.alive and who != "cole" and not interviewed_cole:
 				if day >= 1 or w.data.minute >= 600 or w.flag("delayed_statement") or (w.knows("daniel", "maintenance log") and not w.flag("log_shared")):
-					var work_conflict = int(w.data.flags.get("worked_" + who, -1)) != day and not w.flag("plant_closed")
+					var work_conflict = not worked_today and not w.flag("plant_closed")
 					var why_text = "Cole requested your supervisor deposition on Line 4." + (" Missing today's morning shift forfeits $112 in wages." if work_conflict else "")
 					a.append(option("investigate", "Drive to the station for Detective Cole’s follow-up interview.", 90, why_text))
-			if w.flag("lied") and not w.flag("apology_" + who) and who == "daniel":
+			if w.flag("lied") and not corrected_lie and who == "daniel":
 				a.append(option("correct", "Take Cole’s card and drive to the precinct to recant your lie.", 100, "Erin urged you to retract the false statement before official charges are filed."))
-			# Brother Matt: clearly identified, only when he reached out or morning came
-			if w.data.characters.matt.alive and who != "matt" and (day >= 1 or w.flag("matt_called")):
+			if w.data.characters.matt.alive and who != "matt" and not talked_matt and (day >= 1 or w.flag("matt_called")):
 				a.append(option("matt", "Drive down to the Juniper Diner to check on your brother Matt.", 75, "Matt's delivery van broke down on route 9; he called looking for help."))
-			if not w.flag("records_" + who) and w.player().age >= 18 and day >= 1:
+			if not checked_records and w.player().age >= 18 and day >= 1:
 				a.append(option("records", "Drive to Mercer Works to check the maintenance log.", 90, "Inspect the physical records while the office is quiet."))
-			if day >= 1:
+			if day >= 1 and not drove_today:
 				a.append(option("drive", "Take the truck out on the county road to clear your head.", 75, "Fatigue makes driving more dangerous."))
 
 		"diner":
 			# Local actions inside the diner
-			if w.data.characters.matt.alive and who != "matt":
+			if w.data.characters.matt.alive and who != "matt" and not talked_matt:
 				a.append(option("matt", "Sit down with Matt in his booth.", 75, "Your brother’s problems have not stopped for the investigation."))
-			if w.data.characters.luis.alive and who != "luis":
+			if w.data.characters.luis.alive and who != "luis" and not talked_luis:
 				a.append(option("luis", "Buy Luis a coffee and hear him out.", 75, "Luis may share what he knows if he trusts you."))
-			a.append(option("neighbor", "Talk with the regular sitting at the counter.", 60, "A local can share an experience, not omniscient town gossip."))
+			if not talked_neighbor:
+				a.append(option("neighbor", "Talk with the regular sitting at the counter.", 60, "A local can share an experience, not omniscient town gossip."))
 			# Leaving the diner
 			a.append(option("rest", "Leave the diner and head home to sleep.", 480, "Rest restores health and reduces fatigue."))
-			if w.data.characters.erin.alive and who != "erin":
+			if w.data.characters.erin.alive and who != "erin" and not talked_family:
 				a.append(option("family", "Head home to check in on Erin.", 90, "Return to the house to talk with Erin."))
-			if w.data.characters.nate.alive and who != "nate":
+			if w.data.characters.nate.alive and who != "nate" and not visited_nate:
 				a.append(option("visit", "Drive over to St. Anne’s to see Nate.", 90, "Head to the hospital."))
-			if w.data.characters.cole.alive and who != "cole":
+			if w.data.characters.cole.alive and who != "cole" and not interviewed_cole:
 				a.append(option("investigate", "Drive over to the station to meet Detective Cole.", 90, "Head to the station."))
 
 		"plant":
 			# Local actions on plant grounds
-			if not w.flag("plant_closed") and not w.flag("fired_" + who) and w.player().age >= 18 and int(w.data.flags.get("worked_" + who, -1)) != day:
+			if not w.flag("plant_closed") and not w.flag("fired_" + who) and w.player().age >= 18 and not worked_today:
 				a.append(option("work", "Pick up a shift on the factory floor.", 420, "Earns $112 wages. Requires 7 hours; fatigue and plant conditions matter."))
-			if not w.flag("records_" + who) and w.player().age >= 18:
+			if not checked_records and w.player().age >= 18:
 				a.append(option("records", "Check the supervisor's maintenance log.", 90, "The plant log exists, but its condition may have changed."))
-			if day >= 2 and w.player().age >= 18 and not w.flag("plant_closed"):
+			if day >= 2 and w.player().age >= 18 and not w.flag("plant_closed") and not worked_today:
 				a.append(option("overtime", "Take Harold's double shift on the stamping line.", 480, "Pays $160 in cash wages, but adds the exhausted condition and keeps you away from home all night."))
 			# Leaving the plant
 			a.append(option("rest", "Punch out and head home to sleep.", 480, "Leave the factory floor and sleep."))
-			if w.data.characters.erin.alive and who != "erin":
+			if w.data.characters.erin.alive and who != "erin" and not talked_family:
 				a.append(option("family", "Head home to Erin.", 90, "Leave the plant and return home."))
-			if w.data.characters.nate.alive and who != "nate":
+			if w.data.characters.nate.alive and who != "nate" and not visited_nate:
 				a.append(option("visit", "Drive over to St. Anne’s to check on Nate.", 90, "Check on Nate in recovery."))
-			if w.data.characters.matt.alive and who != "matt":
+			if w.data.characters.matt.alive and who != "matt" and not talked_matt:
 				a.append(option("matt", "Drive down to the Juniper Diner.", 75, "Head into town to meet Matt."))
 
 		"hospital":
 			# Local actions at the hospital
-			if w.data.characters.nate.alive and who != "nate":
+			if w.data.characters.nate.alive and who != "nate" and not visited_nate:
 				a.append(option("visit", "Visit Nate in his room.", 90, "Nate is propped up in his hospital bed."))
-			if w.player().health < 65:
+			if w.player().health < 90 and not saw_doctor:
 				a.append(option("doctor", "Have a doctor look at your injuries.", 120, "Medical attention improves health and prevents neglect."))
 			# Leaving the hospital
 			a.append(option("rest", "Leave the hospital and head home to sleep.", 480, "Head back to the house to get rest."))
-			if w.data.characters.erin.alive and who != "erin":
+			if w.data.characters.erin.alive and who != "erin" and not talked_family:
 				a.append(option("family", "Head home to Erin.", 90, "Return home to Erin."))
-			if w.data.characters.cole.alive and who != "cole":
+			if w.data.characters.cole.alive and who != "cole" and not interviewed_cole:
 				a.append(option("investigate", "Drive to the station to meet Detective Cole.", 90, "Head to the station."))
-			if w.data.characters.matt.alive and who != "matt":
+			if w.data.characters.matt.alive and who != "matt" and not talked_matt:
 				a.append(option("matt", "Head down to the Juniper Diner.", 75, "Drive to the diner."))
 
 		"station":
 			# Local actions at the police station
-			if w.data.characters.cole.alive and who != "cole":
+			if w.data.characters.cole.alive and who != "cole" and not interviewed_cole:
 				a.append(option("investigate", "Speak with Detective Cole about the investigation.", 90, "Discuss the investigation on formal ground."))
-			if not w.flag("apology_" + who) and w.flag("lied") and who == "daniel":
+			if not corrected_lie and w.flag("lied") and who == "daniel":
 				a.append(option("correct", "Formally correct your previous statement.", 100, "Your earlier false statement remains in the event history."))
 			# Leaving the station
 			a.append(option("rest", "Leave the station and head home to sleep.", 480, "Head back home to get rest."))
-			if w.data.characters.erin.alive and who != "erin":
+			if w.data.characters.erin.alive and who != "erin" and not talked_family:
 				a.append(option("family", "Head home to Erin.", 90, "Return home to Erin."))
-			if w.data.characters.nate.alive and who != "nate":
+			if w.data.characters.nate.alive and who != "nate" and not visited_nate:
 				a.append(option("visit", "Drive to St. Anne’s Hospital to see Nate.", 90, "Head to the hospital."))
-			if w.data.characters.matt.alive and who != "matt":
+			if w.data.characters.matt.alive and who != "matt" and not talked_matt:
 				a.append(option("matt", "Drive down to the Juniper Diner.", 75, "Head to the diner."))
 
 		_:
 			# Road or other fallback locations
-			if day >= 1:
+			if day >= 1 and not drove_today:
 				a.append(option("drive", "Keep driving the county road to clear your head.", 75, "Fatigue makes driving more dangerous."))
 			a.append(option("rest", "Turn the car around and head home to sleep.", 480, "Return to the house to rest."))
-			if w.data.characters.nate.alive and who != "nate":
+			if w.data.characters.nate.alive and who != "nate" and not visited_nate:
 				a.append(option("visit", "Head toward St. Anne’s Hospital to see Nate.", 90, "Drive to the hospital."))
-			if w.data.characters.matt.alive and who != "matt":
+			if w.data.characters.matt.alive and who != "matt" and not talked_matt:
 				a.append(option("matt", "Head toward the Juniper Diner to meet Matt.", 75, "Drive to the diner."))
-			if w.data.characters.cole.alive and who != "cole":
+			if w.data.characters.cole.alive and who != "cole" and not interviewed_cole:
 				a.append(option("investigate", "Head toward the station to meet Cole.", 90, "Drive to the station."))
 
 	if a.is_empty():
-		a.append(option("rest", "Rest and let time pass.", 480, "Rest restores health and reduces fatigue."))
+		a.append(option("rest", "Head home to rest and let the night pass.", 480, "All immediate daytime tasks are completed for today. Rest advances to the next morning."))
 	return a
 
 func validate(w, action_id: String) -> String:
@@ -188,6 +200,22 @@ func act(w, action_id: String) -> bool:
 	var who: String = w.data.player
 	w.advance(a.minutes)
 	w.record(w.player().name + " chose: " + a.label, [who], "player action", false, "working", who)
+	
+	# Mark daily / one-shot completed action tracking flags to prevent duplicate choices
+	match action_id:
+		"family": w.data.flags["talked_family_day_" + str(before_day)] = true
+		"visit": w.data.flags["visited_nate_day_" + str(before_day)] = true
+		"investigate": w.data.flags["interviewed_cole_day_" + str(before_day)] = true
+		"matt": w.data.flags["talked_matt_day_" + str(before_day)] = true
+		"luis": w.data.flags["talked_luis_day_" + str(before_day)] = true
+		"neighbor": w.data.flags["talked_neighbor_day_" + str(before_day)] = true
+		"doctor": w.data.flags["saw_doctor_day_" + str(before_day)] = true
+		"drive": w.data.flags["drove_today_" + str(before_day)] = true
+		"records": w.data.flags["records_" + who] = true
+		"correct": w.data.flags["corrected"] = true
+		"job": w.data.flags["job_reviewed"] = true
+		"rest": w.data.flags["rested_day_" + str(before_day)] = true
+
 	var prose = ""
 	match before_scene:
 		"encounter": prose = encounters.resolve(w, action_id)
@@ -232,9 +260,9 @@ func npc_turn(w, before_day: int, minutes_passed: int = 30) -> String:
 					w.data.characters.matt.finances.cash -= 120
 					w.data.characters.matt.finances.debt -= 120
 					w.data.characters.daniel.finances.cash += 120
-					w.record("Matt repaid the  loan to Daniel.", ["matt", "daniel"], "bank transfer", false, "important", "matt")
+					w.record("Matt repaid the loan to Daniel.", ["matt", "daniel"], "bank transfer", false, "important", "matt")
 					if w.data.player == "daniel":
-						visible.append("A transfer from Matt arrives: . He remembered the date on the diner paper.")
+						visible.append("A transfer from Matt arrives. He remembered the date on the diner paper.")
 				else:
 					intent.status = "unfulfilled"
 	if w.data.characters.luis.alive and w.data.player != "luis" and w.flag("luis_witness") and not w.flag("luis_spoke") and w.data.minute > 500:

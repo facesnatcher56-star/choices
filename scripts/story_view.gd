@@ -74,23 +74,23 @@ func build_finance_sidebar() -> void:
 	finance_sidebar.custom_minimum_size.x = 210
 	finance_sidebar.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	var f_title = label("FINANCES", 11, StoryTheme.GOLD, 700)
+	var f_title = label("FINANCES", 16, StoryTheme.GOLD, 700)
 	finance_sidebar.add_child(f_title)
 
 	var cash_box = VBoxContainer.new()
 	cash_box.add_theme_constant_override("separation", 2)
 	finance_sidebar.add_child(cash_box)
-	var cash_sub = label("AVAILABLE CASH", 10, MUTED, 600)
+	var cash_sub = label("AVAILABLE CASH", 14, MUTED, 600)
 	cash_box.add_child(cash_sub)
-	finance_cash_label = label("$420", 24, INK, 700)
+	finance_cash_label = label("$420", 32, INK, 700)
 	cash_box.add_child(finance_cash_label)
 
 	var debt_box = VBoxContainer.new()
 	debt_box.add_theme_constant_override("separation", 2)
 	finance_sidebar.add_child(debt_box)
-	var debt_sub = label("TOTAL DEBT", 10, MUTED, 600)
+	var debt_sub = label("TOTAL DEBT", 14, MUTED, 600)
 	debt_box.add_child(debt_sub)
-	finance_debt_label = label("$0", 18, StoryTheme.MUTED, 700)
+	finance_debt_label = label("$0", 26, StoryTheme.MUTED, 700)
 	debt_box.add_child(finance_debt_label)
 
 	var sep = ColorRect.new()
@@ -98,7 +98,7 @@ func build_finance_sidebar() -> void:
 	sep.color = Color("1c282e")
 	finance_sidebar.add_child(sep)
 
-	var bills_title = label("UPCOMING BILLS", 10, StoryTheme.GOLD, 600)
+	var bills_title = label("UPCOMING BILLS", 15, StoryTheme.GOLD, 600)
 	finance_sidebar.add_child(bills_title)
 
 	var bills_scroll = ScrollContainer.new()
@@ -142,13 +142,13 @@ func update_finance_sidebar() -> void:
 		var title_lbl = Label.new()
 		title_lbl.text = b.get("title", id.capitalize())
 		title_lbl.add_theme_font_override("font", StoryTheme.font_ui(600))
-		title_lbl.add_theme_font_size_override("font_size", 12)
+		title_lbl.add_theme_font_size_override("font_size", 16)
 		title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 		var detail_lbl = Label.new()
 		detail_lbl.add_theme_font_override("font", StoryTheme.font_ui(400))
-		detail_lbl.add_theme_font_size_override("font_size", 11)
+		detail_lbl.add_theme_font_size_override("font_size", 15)
 		detail_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 		if status in ["unpaid", "overdue"]:
@@ -209,17 +209,17 @@ func build_screen() -> void:
 
 	var top_bar = HBoxContainer.new()
 	header.add_child(top_bar)
-	var brand = label("ONE BAD WEEK", 11, StoryTheme.GOLD, 700)
+	var brand = label("ONE BAD WEEK", 16, StoryTheme.GOLD, 700)
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top_bar.add_child(brand)
-	finance_label = label("", 12, MUTED)
+	finance_label = label("", 16, MUTED)
 	finance_label.hide()
 	top_bar.add_child(finance_label)
 	var menu_btn = quiet_button("Menu", show_panel.bind("menu"))
 	menu_btn.add_theme_font_override("font", StoryTheme.font_ui(600))
 	top_bar.add_child(menu_btn)
 
-	context_label = label("", 13, MUTED)
+	context_label = label("", 18, MUTED)
 	context_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	header.add_child(context_label)
 
@@ -274,7 +274,7 @@ func build_screen() -> void:
 	bottom_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	scroll_wrapper.add_child(bottom_fade)
 
-	title_label = label("", 28, INK)
+	title_label = label("", 36, INK)
 	title_label.add_theme_font_override("font", StoryTheme.font_serif(700))
 	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	body.add_child(title_label)
@@ -291,11 +291,11 @@ func build_screen() -> void:
 	narrative.add_theme_font_override("bold_font", StoryTheme.font_serif(700))
 	narrative.add_theme_font_override("italics_font", StoryTheme.font_serif(400, true))
 	narrative.add_theme_font_override("bold_italics_font", StoryTheme.font_serif(700, true))
-	narrative.add_theme_font_size_override("normal_font_size", 20)
-	narrative.add_theme_font_size_override("bold_font_size", 20)
-	narrative.add_theme_font_size_override("italics_font_size", 20)
-	narrative.add_theme_font_size_override("bold_italics_font_size", 20)
-	narrative.add_theme_constant_override("line_separation", 7)
+	narrative.add_theme_font_size_override("normal_font_size", 26)
+	narrative.add_theme_font_size_override("bold_font_size", 26)
+	narrative.add_theme_font_size_override("italics_font_size", 26)
+	narrative.add_theme_font_size_override("bold_italics_font_size", 26)
+	narrative.add_theme_constant_override("line_separation", 10)
 	body.add_child(narrative)
 
 	var breath = Control.new()
@@ -309,11 +309,11 @@ func build_screen() -> void:
 
 	alternate_button = quiet_button("Other approaches", next_page)
 	alternate_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	alternate_button.add_theme_font_size_override("font_size", 14)
+	alternate_button.add_theme_font_size_override("font_size", 18)
 	alternate_button.hide()
 	body.add_child(alternate_button)
 
-	status_label = label("", 12, MUTED)
+	status_label = label("", 16, MUTED)
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status_label.hide()
 	root.add_child(status_label)
@@ -334,7 +334,7 @@ func build_screen() -> void:
 	layout_page()
 
 func layout_page() -> void:
-	var total_content = 1046
+	var total_content = 1180
 	var gutter = maxi(24, int((size.x - total_content) / 2))
 	page_margin.add_theme_constant_override("margin_left", gutter)
 	page_margin.add_theme_constant_override("margin_right", gutter)
@@ -450,7 +450,7 @@ func refresh() -> void:
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.add_theme_font_override("font", StoryTheme.font_ui(400))
-		b.add_theme_font_size_override("font_size", 16)
+		b.add_theme_font_size_override("font_size", 22)
 		b.add_theme_color_override("font_color", INK)
 		b.add_theme_color_override("font_hover_color", Color("fff7e6"))
 		b.add_theme_color_override("font_focus_color", Color("fff7e6"))
@@ -530,10 +530,10 @@ func show_panel(mode: String) -> void:
 	inspector_mode.visible = mode == "debug"
 	if mode == "debug":
 		panel_text.add_theme_font_override("normal_font", StoryTheme.font_mono())
-		panel_text.add_theme_font_size_override("normal_font_size", 13)
+		panel_text.add_theme_font_size_override("normal_font_size", 16)
 	else:
 		panel_text.add_theme_font_override("normal_font", StoryTheme.font_ui(400))
-		panel_text.add_theme_font_size_override("normal_font_size", 15)
+		panel_text.add_theme_font_size_override("normal_font_size", 19)
 	match mode:
 		"menu":
 			panel_title.text = "One Bad Week"

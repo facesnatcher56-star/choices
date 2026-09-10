@@ -108,7 +108,7 @@ static func create() -> Theme:
 	var ui_font = font_ui(400)
 	var ui_bold = font_ui(700)
 	t.default_font = ui_font
-	t.default_font_size = 15
+	t.default_font_size = 20
 
 	t.set_font("font", "Label", ui_font)
 	t.set_color("font_color", "Label", INK)
