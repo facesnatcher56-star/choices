@@ -38,10 +38,10 @@ func _initialize() -> void:
 	check(w.data.story_log[0].text.contains("vouched") and w.data.story_log[0].text.contains("Luis"), "Opening explains why the injured man and ally matter")
 	check(w.data.story_log[2].text.contains("nobody from that office is here tonight"), "No instant investigator at the scene")
 	check(w.knowledge_for("cole").is_empty(), "Cole cannot know an unreceived overnight report")
-	check(not has(w, "submit_recording") and not has(w, "investigate"), "No overnight safety interview")
-	check(not has(w, "visit") and not has(w, "family") and not has(w, "matt"), "Ordinary overnight visits are unavailable")
-	check(has(w, "rest") and has(w, "wait_open"), "Night still has a useful way forward")
-	check(w.data.story_log[4].text.contains("streets outside are dark"), "Early homecoming does not invent sunrise")
+	check(not has(w, "submit_recording") and not has(w, "investigate"), "No early safety interview before office hours")
+	check(not has(w, "visit") and not has(w, "family") and not has(w, "matt"), "Ordinary daytime visits wait for opening hours")
+	check(has(w, "rest"), "Morning offers rest if still recovering")
+	check(w.data.story_log[4].text.contains("streets outside are dark"), "Homecoming preserves the night conversation before sunrise")
 	at(w, 0, 10)
 	d.npc_turn(w, 0)
 	check(w.flag("report_received") and not has(w, "investigate"), "Report receipt does not mean immediate interview")
@@ -102,10 +102,10 @@ func _initialize() -> void:
 	check(has(w, "work"), "Daytime interview does not arbitrarily erase a night shift")
 	at(w, 2, 9)
 	w.player().finances.cash = 34
-	check(not has(w, "truck_diy"), "Parts cost cannot be silently waived")
+	check(not has(w, "nate_rx"), "Prescription cost cannot be silently waived")
 	w.player().finances.cash = 35
-	act(w, "truck_diy")
-	check(w.player().finances.cash == 0 and w.flag("truck_fixed"), "Repair charges stated parts price")
+	act(w, "nate_rx")
+	check(w.player().finances.cash == 0 and w.flag("nate_rx_paid"), "Prescription charges stated price")
 
 	# A meaningful dilemma has distinct consequences, not just different adjectives.
 	for response in ["named", "protect", "back_off"]:

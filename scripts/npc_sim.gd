@@ -1,4 +1,4 @@
-﻿extends RefCounted
+extends RefCounted
 ## Simulates background NPC lives, daily routines, schedules, and ambient town events.
 ## Keeps track of the town moving and breathing alongside the player without repetitive loops.
 
@@ -13,9 +13,8 @@ func simulate(w, minutes_passed: int, before_day: int) -> String:
 	
 	update_routines(w, hour, day)
 	
-	# Only generate ambient observations during genuine town progression
-	if minutes_passed >= 30 and not w.flag("ambient_introduced_" + player_loc):
-		w.data.flags["ambient_introduced_" + player_loc] = true
+	# Generate wild, unhinged moment-to-moment chaos during town progression
+	if minutes_passed >= 15:
 		var event = ambient_observation(w, hour, day, player_loc)
 		if not event.is_empty():
 			return event
@@ -51,34 +50,40 @@ func update_routines(w, hour: int, day: int) -> void:
 func ambient_observation(w, hour: int, day: int, loc: String) -> String:
 	var pools: Dictionary = {
 		"plant": [
-			"Across the bay, someone taped a fresh handwritten sign over Line 4: 'DO NOT TOUCH - PENDING REVIEW'. Maintenance spelled 'pending' with two d's.",
-			"In the glass supervisor’s booth, Harold is on the landline, holding a roll of Tums in one fist while shouting over the exhaust fans.",
-			"A shift forklift clatters past, carrying a pallet of reject stampings. The driver gives you that tight, knowing nod men give each other when corporate is in the building."
+			"Across the bay, a forklift doing high-speed donuts on grease-slick concrete crashes straight through a stack of empty 55-gallon oil drums, sending pigeons scattering and workers diving for cover!",
+			"High above the floor, an industrial crane cable snaps with a gunshot crack, swinging a 10-ton steel die inches over the catwalk before smashing violently into a steel girder!",
+			"Harold Voss kicks open his booth door brandishing a fire extinguisher and a double espresso, shrieking at two mechanics who just accidentally set the secondary breaker panel on fire!",
+			"A surveillance drone with a blinking red lens buzzes low through the stamping bay; press operators throw heavy combination wrenches at it until it zips out the roof exhaust vent!"
 		],
 		"diner": [
-			"Over by the jukebox at the Juniper Diner, two second-shift pressmen are arguing over who pays for coffee, checking the parking lot every time headlights sweep the window.",
-			"Behind the counter, the griddle sizzles with bacon grease. A laminated sign on the register reads: 'NO CHECKS, NO CREDIT, NO EXCEPTIONS - WE MEAN YOU, HAROLD'.",
-			"The diner radio is tuned to county weather—more freezing rain, naturally. The heater in the corner hums like an angry hornets' nest."
+			"The diner jukebox short-circuits with a shower of sparks, blasting thrash metal at maximum volume while the kitchen deep fryer erupts into a four-foot grease inferno!",
+			"A flatbed tow truck with smoking brakes skids sideways through the icy gravel lot, obliterating two newspaper stands before wedging itself against the steel dumpster!",
+			"Two off-duty pressmen and an angry repo bounty hunter get into a wild fistfight over a stolen catalytic converter, sending plates of hash browns flying across the counter!",
+			"State troopers burst into the diner with shotguns unholstered, arresting an unhinged courier who was trying to stash crates of racing nitrous behind the pie display!"
 		],
 		"hospital": [
-			"Down the linoleum hallway of St. Anne's, a muted TV is broadcasting daytime commercials for personal injury attorneys who promise cash for 'industrial negligence'.",
-			"A nurse wheels an empty squeaking gurney past, yawning behind her surgical mask. The fluorescent bulbs overhead buzz in a weary B-flat.",
-			"Through the double doors of the recovery wing, the sharp reek of floor wax and rubbing alcohol battles with the smell of lukewarm cafeteria coffee."
+			"A patient strapped into a motorized wheelchair with a modified motorcycle battery roars down the linoleum hallway at 25 mph, pursued by three screaming orderlies!",
+			"The trauma bay automatic doors slam open as a high-speed police pursuit terminates right in the ambulance bay, tires smoking and sirens deafening the emergency room!",
+			"The St. Anne's PA system screeches in panic: 'Code Red in the boiler room! The auxiliary diesel tank is leaking into the laundry chute!'",
+			"A private investigator in a cheap fedora gets body-slammed onto a gurney by hospital security after trying to bug Nate's recovery room with a wiretap!"
 		],
 		"station": [
-			"A receptionist sorts employer incident reports into dated folders behind the safety office counter.",
-			"An agency car is parked beside the office. A hard hat and inspection equipment sit on the back seat.",
-			"On the safety office corkboard, an OSHA compliance poster from 2014 hangs pinned crookedly between lost hound notices and sheriff campaign flyers."
+			"A confiscated crate of black-market fireworks in the evidence cage suddenly starts popping and shooting colorful sparks across the ceiling, sending officers scrambling under desks!",
+			"Investigator Cole's office door flies open as federal marshals in tactical armor wheel in five impounded server towers seized from Harold Voss's shell company!",
+			"The police dispatch switchboard lights up like a pinball machine—half the county is reporting an unlicensed armored bulldozer tearing down the old rail line!",
+			"An emergency dispatcher barks over the intercom that a tanker carrying twenty thousand gallons of industrial silicone has overturned on the county bridge!"
 		],
 		"home": [
-			"In the living room, the refrigerator compressor kicks on with its familiar shuddering rattle. On the kitchen counter, Chloe’s school lunchbox sits beside an overdue heating bill.",
-			"Outside the kitchen window, the neighbor’s hound barks twice at a passing delivery van before settling back down into the mud.",
-			"The pipes behind the bathroom wall groan as the water heater fires up. A draft creeps under the Mercer front door, carrying the scent of damp pines."
+			"Outside the kitchen window, Rebecca Shaw test-fires a propane-powered potato cannon across the creek, scoring a direct hit on a rogue surveillance drone that spirals into the trees!",
+			"A speeding county utility van clips your mailbox into kindling; the driver tosses out a pre-stamped apology envelope and burns rubber down the road!",
+			"The kitchen scanner screams with frantic chatter as the county sheriff reports three prize-winning Angus bulls escaped a trailer and are charging oncoming traffic!",
+			"A black unmarked helicopter sweeps a blinding spotlight across your roof and tree line for five terrifying seconds before banking sharply toward the mountains!"
 		],
 		"road": [
-			"A gravel hauler with a rusty tailgate blasts past on County 9, throwing a hail of wet grit against your windshield.",
-			"Along the tree line, a rusted billboard for a defunct lumber yard leans at thirty degrees, half-swallowed by kudzu and November rot.",
-			"A deer stands frozen on the shoulder in the freezing mist, watching your headlights before vanishing into the hemlocks."
+			"A supercharged muscle car with flames spitting from straight pipes roars past you at 100 mph, pursued by three state police interceptors in hot pursuit!",
+			"A livestock hauler jackknifes across the bridge, dumping fifty squealing greased pigs across both lanes and forcing you to swerve into the gravel shoulder!",
+			"You swerve hard to avoid a burning sectional sofa that flew off a moving trailer, sparks peppering your windshield as you punch the four-wheel drive!",
+			"High-voltage power lines whip violently across the road like electric whips, exploding in blinding blue flashes against the asphalt as emergency crews drop flares!"
 		]
 	}
 	

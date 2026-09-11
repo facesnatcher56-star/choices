@@ -13,21 +13,21 @@ func accident(w, id: String) -> String:
 			w.data.flags.power_off = true
 			w.data.flags.quick_help = true
 			w.data.characters.nate.health = 46
-			text = "You throw your full weight into the mushroom emergency stop. With a dying hydraulic groan, the forty-ton press freezes in place. You scream for Luis to dial 911 while you drop to the concrete, tearing off your work shirt to pack the wound and stem the arterial bleeding until sirens echo outside."
+			text = "You dropkick your entire body weight straight into the glowing red mushroom stop! The hydraulic ram screeches to an emergency halt with an explosive detonation of boiling steam and shredded metal shrapnel! You rip off your jacket, screaming for Luis to dial 911 while you slide across the oil slick, packing Nate's torn arm before secondary transformer lines explode!"
 		"ambulance":
 			w.data.flags.quick_help = true
 			w.data.characters.nate.health = 48
-			text = "You drop straight to your knees on the oil-slicked floor, yelling for Luis to cut the breaker as you press both hands hard into Nate's torn arm to slow the bleed. Luis hits the cutoff just before the machine can shudder again. The dispatcher's voice crackles on speakerphone while you hold pressure until the paramedics burst through the fire doors."
+			text = "You power-slide knees-first through a lake of hot hydraulic oil, screaming over the wailing air-raid sirens for Luis to kill the substation breaker! You clamp both hands onto Nate's mangled arm like an iron vise, arresting the arterial jet as secondary breaker banks pop like fireworks across the ceiling! Luis pulls the master disconnect just as the press throws blinding lightning arcs, and paramedics storm through the blast doors with a crash cart!"
 		"call_luis":
 			w.data.flags.quick_help = true
 			w.data.flags.power_off = true
 			w.data.characters.nate.health = 48
-			text = "Luis calls emergency dispatch while you kill the machine breaker and clear the floor. You drop beside Nate and pack his torn arm until the paramedics take over. Splitting the response keeps everyone moving and buys Nate precious minutes."
+			text = "Luis calls emergency dispatch while you kill the machine breaker and dodge exploding pneumatic hoses! You dive beneath the smoking iron jaws, packing Nate's arm with raw adrenaline until paramedics storm the smoking bay. Splitting the response keeps everyone moving and buys Nate precious seconds before the press can cycle again."
 	w.data.flags.accident = true
 	w.record("Nate was taken to St. Anne’s Hospital after the machine accident.", ["daniel", "harold", "luis"], "direct observation", false, "important", "nate")
 	w.data.characters.nate.location = "hospital"
 	w.data.scene = "pressure"
-	return text + "\n\nParamedics wheel Nate out through the slush under screaming sirens, his blood leaving dark speckles across the threshold. After the bay doors rattle shut, Harold Voss catches you against the steel locker bank by the time clock. His collar is dark with sour sweat, his thumb frantically clicking a silver ballpoint pen. He steps into your space, smelling of stale coffee and panic:\n\n‘We need to be consistent on this, Daniel. You checked that guard on your pre-shift walkthrough. It looked normal. That’s all anyone needs to hear. You back the plant, and the plant backs you. We start throwing fault around, corporate pulls the stamping contract and thirty families are on the street by Friday.’"
+	return text + "\n\nParamedics wheel Nate out through the slush under screaming sirens and flashing red strobes, his blood spraying across the icy tarmac. Black SUVs with tinted windows circle the main gate like vultures! The heavy steel blast doors slam shut, and Harold Voss corners you against the locker bank like a manic conspirator. He's sweating bullets, chugging cold quad-shot espresso, his knuckles white around a heavy steel crowbar:\n\n‘We need to be rock-solid on this, Daniel! Corporate doesn't just build brackets here—we've got off-the-books aerospace contracts and syndicate investors who will burn this zip code to the ground if inspectors start tearing apart Line 4! You say the guard looked pristine. You back the plant, or thirty families are dodging repo men and cartel hit squads by Friday!’"
 
 func pressure(w, id: String) -> String:
 	var text = ""
@@ -38,26 +38,26 @@ func pressure(w, id: String) -> String:
 			w.data.objects.photo = {"owner": "daniel", "location": "daniel", "condition": "original", "history": []}
 			w.player().possessions.append("photo")
 			w.record("Daniel photographed the wire holding the guard open after the ambulance departed.", ["daniel"], "direct observation", false, "important", "daniel")
-			text = "While Harold turns his back and ducks into the glass supervisor booth to dig through filing cabinets for incident paperwork, you step quickly across the oil-slicked floor back to Line 4. The forty-ton press sits dead in the sodium glare. With adrenaline buzzing in your ears, you drop to one knee and frame three sharp photos: the stiff copper wire twisted around the safety interlock, the bypassed micro-switch, and the serial plate on the press housing. The timestamp burns into your phone’s memory. As Harold's heavy work boots crunch back across the concrete, your phone is already buried deep in your coat pocket."
+			text = "While Harold is frantically shredding manifests in the glass booth, you sprint back through the acrid chemical smoke to Line 4! The mammoth press sits hissing in the dark like a wounded dragon. You drop to one knee and snap three high-resolution photos: the braided military-grade copper wire cinched around the safety interlock, the bypassed micro-switch, and the serial plate stamped with classified defense contract markings. The digital evidence burns into your phone as Harold’s heavy boots come pounding back across the concrete."
 		"agree":
 			w.data.flags.promised = true
 			w.relationship("harold", "daniel", "trust", 18)
-			text = "You swallow down the bitter bile in your throat and give Harold a slow, compliant nod. Harold lets out a shuddering, ragged breath, his shoulders dropping two inches. He claps a clammy, heavy palm onto your shoulder with forced warmth: ‘Good man, Daniel. I knew you were solid. When the hammer falls, you find out who stands with the line.’ His eyes dart away from yours, fixating on the floorboards: ‘Keep your head down and let me handle the paperwork. I won't forget this on the next promotion cycle.’ You protected your paycheck for now, but your name is bound to a lie."
+			text = "You swallow the acid in your throat and give a tight nod. Harold exhales like a ruptured steam valve, laughing with wild, unhinged relief! He slaps you hard on the back: ‘My man! I knew you had ice in your veins, Daniel! Corporate pays six-figure hush money to men who keep their mouths shut! When this storm blows over, you and me are getting a massive piece of the syndicate pie!’"
 		"refuse":
 			w.relationship("harold", "daniel", "trust", -20)
 			w.relationship("harold", "daniel", "resentment", 20)
-			text = "You meet Harold’s bloodshot eyes and tell him straight: you will write an honest statement about what you found on Line 4. Harold’s jaw locks like rusted iron. The nervous tremor in his hands instantly freezes into cold, calculated hostility. He leans forward until you can smell the tobacco on his teeth: ‘You want to be a hero, Daniel? Heroes don’t have a mortgage. Heroes don’t buy groceries for a fifteen-year-old girl. You put pen to paper blaming Mercer Works, and you’ll be blacklisted from every machine shop in this county. You remember whose signature signs off on your hourly pay before you blow your life apart.’"
+			text = "You stare Harold down through the smoke and tell him flat out: you're writing the exact truth. Harold's bloodshot eyes bug out. He brandishes the crowbar, swinging it within inches of your jaw: ‘You want to be a hero, Mercer?! Heroes end up in shallow ditches out in the marsh! I've got cartel loan sharks breathing down my neck and corporate muscle thirty minutes away! You sign that paper, or you're signing your own death warrant!’"
 		"defer":
-			text = "You show Harold your trembling, grease-blackened hands. ‘My hands are shaking, Harold. I just dragged my friend out from under forty tons of steel. I need five minutes to splash cold water on my face before I write anything.’ Harold’s jaw twitches with naked annoyance. He glances down at his watch, tapping the scratched glass with a nicotine-stained fingernail: ‘Five minutes, Daniel. Not six. The hospital will log the arrival, and corporate wants the preliminary form faxed before daybreak. Take your breath, then get your head on straight.’"
+			text = "You hold up both hands, trembling and black with grease and hydraulic oil. ‘My adrenaline is completely through the roof, Harold! I just wrestled a dying man out of an industrial meat grinder! Give me five minutes to splash cold water on my face or you'll get gibberish in ink!’ Harold slams his clipboard against the steel locker with a deafening bang: ‘Five minutes, Daniel! The hospital is logging the ambulance and corporate wants this report on the wire before sunrise! Splash your face, then get in line!’"
 		"witness":
 			witnesses.append("luis")
 			w.data.flags.luis_witness = true
 			w.relationship("luis", "daniel", "trust", 12)
-			text = "Instead of letting Harold corner you alone in the shadows, you turn toward the open bay and call out: ‘Luis! Bring that spill kit over here!’ Luis Ortega steps into the harsh light, his forearms stained with Nate’s blood, his eyes wide and vigilant. Harold flushes a dark, furious red, his throat clicking audibly as he swallows his demands. The aggressive bullying collapses into a tight, strained grimace: ‘Just making sure Daniel’s timeline is clear, Luis. Good work on the tourniquet.’ Harold glares at you with quiet venom, but with Luis standing shoulder-to-shoulder with you, he cannot force your hand."
+			text = "You refuse to let Harold isolate you in the shadows. You cup your hands and bellow into the burning bay: ‘Luis! Grab the emergency spill kit and get over here now!’ Luis Ortega marches out of the haze holding a massive 24-inch pipe wrench in one fist, looking like an urban commando. Harold flushes an apoplectic purple, instantly choking down his threats behind a fake grin: ‘Just debriefing Daniel, Luis! Great work on the kill switch!’ With Luis standing beside you like an armed sentinel, Harold's intimidation evaporates into panicked sweating."
 		"record":
 			w.data.flags.recording = true
 			w.relationship("harold", "daniel", "trust", -25)
-			text = "You quietly thumb the side button of your phone inside your jacket, letting the voice recorder roll before you answer. You ask Harold to repeat what he expects you to put in the report. Harold leans in close, his voice a hurried, sweating hiss: ‘You write that the guard was inspected and operational! If the state red-tags Line 4, corporate padlocks the front gates. Thirty guys lose their livelihood. Say the guard looked normal during your check.’ The microphone picks up every trembling syllable, every rasping intake of breath. You nod noncommittally, keeping your hands deep in your pockets."
+			text = "You stealthily thumb the voice-memo hotkey inside your jacket, letting the microphone roll. You bait Harold into repeating his extortion on tape. Harold leans in, his breath reeking of espresso and terror: ‘You swear the guard was operational! If the feds shut Line 4, corporate triggers the panic clause! Thirty guys lose their jobs, and syndicate creditors start repossessing kneecaps! Say the guard looked factory-spec!’ The mic captures every frantic, incriminating syllable."
 	w.record("Harold asked Daniel to say the guard looked normal; Daniel chose to " + {"agree": "agree", "refuse": "refuse", "witness": "bring Luis in", "record": "record the exchange", "photo": "photograph the bypassed guard", "defer": "defer an answer"}[id] + ".", witnesses, "direct conversation", false, "important", "daniel")
 	w.data.intentions.append({"actor": "harold", "action": "review_log", "due": w.data.minute + 240, "why": "Protect the production contract after a reportable accident", "status": "pending"})
 	w.data.scene = "statement"
@@ -71,23 +71,31 @@ func statement(w, id: String) -> String:
 			w.data.flags.lied = true
 			account = "Daniel wrote that the guard looked normal when he checked it."
 			w.record("Daniel knowingly gave a misleading account of the guard.", ["daniel"], "private intention", false, "important", "daniel")
-			text = "You grip the pen and fill out the narrative box: pre-shift walkthrough conducted at 22:00, safety guard fully operational, interlocks responsive, no anomalies observed. You sign your legal name at the bottom. Harold stands right behind your shoulder, watching every ink stroke with eagle eyes. The second you lift the pen, he snatches the clipboard, blowing softly across the wet ink with a satisfied grunt. ‘Smart man, Daniel. You protected the shop.’ There is no state inspector here tonight to challenge it, but your name is etched into the lie."
+			text = "You grip the pen and sign the fraudulent declaration: pre-shift walkthrough conducted at 22:00, safety guard fully operational, interlocks responsive, no anomalies observed. Harold snatches the clipboard with a manic, triumphant grin, blowing softly across the wet ink. "
+			if w.flag("promised"):
+				text += "‘Smart man, Daniel! You kept your word. You protected the shop—and your neck.’"
+			else:
+				text += "‘Thought you were going to be a martyr, Daniel? Glad to see survival instincts won out. You protected the shop.’"
+			text += " There is no state inspector here tonight to challenge it, but outside, your phone instantly buzzes with an anonymous encrypted text: *‘Smart move, Supervisor. Stay quiet and stay alive.’*"
 		"blame":
 			w.data.flags.blamed = true
 			account = "Daniel suggested Nate bypassed the guard; he provided no eyewitness evidence."
-			text = "Your hand shakes as you write down the words that will haunt you: Nate Bell was working at an aggressive piece-rate speed; possible operator modification of safety gate to bypass cycle delay. You leave the eyewitness line blank. You got Nate this job on your personal word; now, while he lies on an operating table having steel slivers pulled from his muscle, you have shifted the blame onto his empty post. Harold reads the form, nodding grimly: ‘A damn shame when young guys get reckless. But the truth has to be documented.’"
+			text = "Your hand shakes as you scrawl the betrayal into ink: Nate Bell operated at an aggressive piece-rate speed; possible unauthorized modification of safety interlocks to bypass cycle delay. You got Nate this job on your personal word; now you’ve fed him to corporate wolves while he lies in an emergency operating room. Harold nods with cold, predatory satisfaction: ‘The kid took the fall. A damn shame, but the plant keeps humming.’ A sickening wave of nausea washes over you as an icy draft whistles under the door."
 		"delay":
 			w.data.flags.delayed_statement = true
-			text = "You fill out the objective details—shift time, machine ID, emergency dispatch arrival—but across the large narrative box you write in heavy block letters: DETAILED STATEMENT DEFERRED PENDING CLEARANCE OF ACUTE SHOCK AND MEDICAL TRAUMA. Harold’s eyebrows knit together into a furious scowl. He taps the metal desk with his wedding ring: ‘This looks evasive, Daniel. Corporate wants closure, not question marks.’ ‘I'm shaken up, Harold. You want a legal statement, you give me time to process it.’ Harold scowls, but state rules require the severe-injury notification within eight hours, and he has to file the paper with your pending note attached."
+			text = "Across the large narrative box, you scrawl in bold black marker: STATEMENT DEFERRED PENDING CLEARANCE OF ACUTE TRAUMA AND FORENSIC DISCOVERY. Harold turns red enough to pop a gasket. He kicks a metal trash can across the office: ‘Are you insane, Daniel?! Corporate wants this file locked down, not an open invitation for federal bloodhounds!’ ‘State law gives me eight hours, Harold. Send your corporate lawyers if you don't like it.’ Harold curses violently, but the law ties his hands."
 		_:
 			w.data.flags.honest = true
 			w.data.flags.statement_careful = true
 			account = "Daniel reported finding the guard bypassed and did not see who did it."
-			text = "You write down the exact sequence of events without hedging: found Nate on the concrete beneath Line 4; observed heavy copper wire holding the safety guard interlock wide open; machine actively cycling; emergency stop triggered; origin of wire unknown. You attribute nothing you did not observe firsthand."
+			text = "You lay out the hard, explosive truth: found Nate trapped beneath Line 4; observed heavy copper wire intentionally rigged around the safety micro-switch; machine actively cycling; emergency stop triggered; culprit unknown. You attribute nothing you didn't see firsthand."
 			if w.flag("photo"):
 				w.data.flags.report_photo_attached = true
 				text += " You staple a printed thumbnail of the bypass wire photograph directly to the form, preserving the digital original on your phone."
-			text += "\n\nHarold snatches the board, scanning your words as his face turns ashen. His knuckles go white against the clip: ‘You just invited a full OSHA inquiry into Mercer Works, Daniel. I hope your high horse keeps your family warm this winter.’"
+			if w.flag("promised"):
+				text += "\n\nHarold snatches the board, his face turning an apoplectic purple. His knuckles crack against the metal: ‘You gave me your word, Daniel! You swore you'd protect the line, and now you hand me an unexploded bomb?! You just declared war on corporate!’"
+			else:
+				text += "\n\nHarold snatches the board, scanning your words as his jaw falls slack in shock: ‘You just lit the fuse on an absolute powder keg, Daniel. Corporate attorneys and federal marshals will rip this town apart!’"
 	if not account.is_empty():
 		w.data.flags.initial_account = account
 		w.data.flags.statement_completed = true
@@ -98,34 +106,54 @@ func statement(w, id: String) -> String:
 	return text + "\n\nThe employer's report will enter the state safety review queue when offices open. Nobody is reviewing it at three in the morning.\n\nYour truck's dashboard clock reads %02d:%02d when you kill the engine in the gravel driveway. The streets outside are dark and empty. In the kitchen window, the pale yellow bulb is still on. Erin, your wife, is sitting at the small laminate table. You once planned to leave Briar Glen together before mortgages and promotions anchored you here. As you step through the back door, she spots the dark smear of oil and blood on your cuff before she even checks the clock.\n\n‘You said you'd be back before two, Daniel. What happened on shift?’" % [int(w.data.minute / 60) % 24, int(w.data.minute) % 60]
 
 func homecoming(w, id: String) -> String:
+	var name: String = w.player().name
 	var text = ""
 	match id:
 		"tell":
 			w.data.flags.told_erin = true
-			w.relationship("erin", "daniel", "trust", 12)
-			w.record("Daniel told Erin about Nate’s accident and Harold’s request.", ["daniel", "erin"], "Daniel’s disclosure", false, "important", "daniel")
-			text = "You pull out the vinyl chair opposite Erin and sit down. In a low, halting whisper so you don't wake Chloe down the hall, you tell her everything: the hydraulic scream of Line 4, Nate's mangled arm, packing the wound with your shirt, and Harold cornering you by the time clock demanding a clean cover-up. Erin listens without interrupting, her knuckles turning white around her ceramic tea mug. Her cardigan is pulled tight across her chest against the draft.\n\n‘Harold Voss,’ she says, her voice trembling with quiet fury. ‘He thinks he owns this town. Daniel, I can handle living broke. I can handle driving a truck with a dying alternator and wearing two sweaters indoors. What I cannot handle is finding out from the morning paper that my husband signed away his soul to cover for Mercer Works.’\n\nShe taps a red final-notice envelope on the table. ‘Your brother Matt called twice while you were on the floor. His delivery van broke down on route 9 again. He was begging for a loan. I told him we’re two weeks behind on the heating bill.’"
+			text = "You slam the deadbolts shut, drop into the chair across from Erin, and lay it out in a breathless rush: the 40-ton turbo press detonating, Nate crushed beneath the glowing die, electrical fire raining from the rafters, and Harold Voss threatening you with cartel hitmen and crowbars by the lockers."
 			if w.flag("lied"):
 				w.record("Daniel admitted to Erin that he knowingly misled the incident report.", ["daniel", "erin"], "Daniel’s admission", false, "important", "daniel")
-				w.relationship("erin", "daniel", "trust", -18)
-				text += "\n\nWhen you admit that you already signed Harold's dishonest incident report to protect your paycheck, Erin recoils as if slapped, pushing her mug away across the table. Her eyes fill with tears of betrayal and fear: ‘You signed it?! An official state injury form?! Daniel... Nate could lose that arm. If you lied on company paper, you need to walk into Investigator Cole's office tomorrow morning and recant before Harold buries you with it.’"
+				w.relationship("erin", "daniel", "trust", -16)
+				text += " Your stomach turns to acid as you admit you signed Harold's cover-up walkthrough to protect your paycheck.\n\nErin leaps to her feet, kicking her chair backward with a crash: ‘You signed off on a corporate cover-up?! Daniel, federal marshals and cartel repo goons will breach this house before sunrise! You get to Investigator Cole and recant before Harold leaves our family holding the murder weapon!’"
+			elif w.flag("blamed"):
+				w.record("Daniel admitted to Erin that he blamed Nate on the incident report.", ["daniel", "erin"], "Daniel’s admission", false, "important", "daniel")
+				w.relationship("erin", "daniel", "trust", -22)
+				text += " Your stomach turns to ice as you confess the rest: you wrote on the state report that Nate was recklessly chasing speed and rigged the switch himself.\n\nErin stares at you as if a ghost just stepped into the kitchen. Her hands drop to the table, trembling with horror. ‘You blamed Nate Bell?!’ she whispers. ‘Daniel, you brought that kid into this town! He’s in trauma surgery fighting for his life, and you framed him to protect Harold Voss?! If federal inspectors get wind of this, they'll drag you out of this house in cuffs! You fix this tomorrow morning before Nate wakes up!’"
+			elif w.flag("delayed_statement"):
+				w.record("Daniel told Erin he deferred his incident statement.", ["daniel", "erin"], "Daniel’s disclosure", false, "important", "daniel")
+				w.relationship("erin", "daniel", "trust", 8)
+				text += " You tell her you refused to rubber-stamp Harold's lies, scrawling a formal medical delay across the narrative box.\n\nErin lets out a sharp whistle, nodding with fierce, breathless approval. ‘You bought us a few hours, Daniel, but Harold's corporate handlers don't take rain checks. By sunrise, suits in black sedans will be circling our block. We need to be ready for an all-out war before Investigator Cole opens his inquiry.’"
+			else: # honest
+				w.record(name + " told Erin the truth about reporting the bypassed guard.", ["daniel", "erin"], "Daniel’s disclosure", false, "important", "daniel")
+				w.relationship("erin", "daniel", "trust", 14)
+				text += " You tell her you stood your ground: you filed an unvarnished, honest report documenting the rigged wire on Line 4."
+				if w.flag("photo"):
+					text += " You show her the high-res photo on your phone—the twisted copper wire and the classified contract stamp."
+				text += "\n\nErin stares at the screen, her eyes blazing with electric intensity. ‘Holy hell, Daniel,’ she whispers, grabbing both of your hands with fierce pride. ‘You stood up to Voss! He's got cartel-backed deadlines on that line! They're going to come at our family with everything they have—repo squads, private investigators, blacklist threats. But God, Daniel... you didn't sell your soul. We barricade our lives and fight them together.’"
+			text += "\n\nShe taps a police scanner chattering on the counter, where dispatch is tracking high-speed sirens. ‘Your brother Matt called twice while you were on the floor. His delivery van broke down on route 9 again. He was begging for a loan. I told him we’re two weeks behind on the heating bill.’"
 		"partial":
+			w.data.flags.told_erin = false
 			w.record("Daniel told Erin only that Nate was injured at work.", ["daniel", "erin"], "Daniel’s disclosure", false, "important", "daniel")
-			text = "You tell her Nate got caught in a machine press and had to be rushed to St. Anne’s, but you bury Harold’s threats and the incident form in silence. Erin watches your throat as you swallow, her eyes searching your face for the pieces you're holding back. ‘Is he going to make it, Daniel?’ ‘The surgeons took him right into the trauma bay,’ you answer quietly. Erin pushes a scrap of notebook paper across the table. ‘Your brother Matt called twice while you were gone. His courier van died on route 9 again. He was begging for money. I told him our card was declined at the grocery yesterday.’"
+			text = "You tell her Nate got caught in a catastrophic failure on Line 4 and was rushed to trauma surgery, but you keep Harold's manic conspiracy threats and the falsified papers to yourself. Erin studies your breathing, sensing the armed powder keg ticking behind your eyes.\n\n‘Is he going to survive, Daniel?’\n\n‘Surgeons are pulling steel out of his arm right now,’ you answer, your jaw clenched.\n\nErin checks the scanner radio nervously. ‘Something crazy is happening at that plant, Daniel... rumors on social media say federal marshals are en route.’ She pushes a torn envelope across the table. ‘Your brother Matt called twice while you were gone. His courier van died on route 9 again. He was begging for money. I told him our card was declined at the grocery yesterday.’"
 		"hide":
+			w.data.flags.told_erin = false
 			w.record("Daniel said he was late because of a difficult shift.", ["daniel", "erin"], "Daniel’s account", true, "important", "daniel")
 			w.relationship("erin", "daniel", "trust", -4)
-			text = "You step straight to the kitchen sink, turning on the hot water to scrub the black grease and copper dust until your hands are raw red. You tell her an overhaul on the stamping die ran three hours late. Erin stands in the kitchen doorway, arms folded tightly. She looks at your stiff posture, then down at the dark stain on your boot. She doesn't yell; after twelve years of marriage, she knows your tells intimately. Her silence is heavier than an accusation: ‘An overhaul. Right.’ She lets out a tired, defeated sigh. ‘Your brother Matt called at one in the morning. His van broke down on route 9. He was hoping you could bail him out. I told him you were busy.’"
-		"sleep":
-			w.player().fatigue = 10
-			w.player().conditions.erase("exhausted")
-			w.player().health = mini(100, w.player().health + 8)
-			text = "You drop your face into your trembling hands, utterly spent. ‘Erin, please. I'm in shock. I can't put words together tonight.’ Erin looks at the exhaustion carved into your features. She softens, stepping behind you and resting a warm, calloused hand against the back of your neck. ‘Tomorrow, then,’ she whispers. ‘Get some sleep before you collapse. We'll deal with the morning when it gets here.’"
-	w.data.scene = "town"
+			text = "You head straight to the sink, scrubbing black grease and copper dust until your knuckles burn. You claim a massive electrical blowout kept you trapped on the line. Erin leans against the doorframe, arms folded, watching you with laser focus. She notices the dried blood on your boot and the burner phone vibrating in your coat.\n\n‘An electrical blowout,’ she repeats, her voice razor-sharp. ‘Right. And that's why two state police cruisers just tore down route 9 with their sirens screaming?’ She shakes her head with bitter exhaustion. ‘Your brother Matt called at one in the morning. His van broke down on route 9. He was hoping you could bail him out. I told him you were busy.’"
+
+	text += "\n\nOutside the kitchen window, the streets outside are dark and empty. The clock on the wall ticks past four in the morning. Exhaustion finally drags the fight out of you. You turn off the kitchen light and head down the dark hallway to bed, falling into a deep, dreamless sleep.\n\nWhen morning comes, pale daylight cuts across the bedroom floor. You wake at 08:30 AM. Down the hall, Chloe has already caught the bus to Briar Glen High, and a mechanical rooster is rolling into town announcing a foreclosure parade. Your body has rested. Reality apparently has not. Choose ENTER THE CHAOS to confront the parade, or pursue the plant crisis; both stories remember what you do."
+
+	w.data.minute = 8 * 60 + 30
+	w.player().fatigue = 8
+	w.player().conditions.erase("exhausted")
+	w.player().health = mini(100, int(w.player().health) + 8)
+	w.data.flags["talked_family_day_0"] = true
 	w.data.flags["matt_called"] = true
-	var hour = int(w.data.minute / 60) % 24
-	var light = "The streets outside are dark." if hour < 6 or hour >= 18 else ("Pale November light reaches the kitchen window." if hour < 9 else "Daylight lies across the kitchen table.")
-	return text + "\n\n" + light + " Your shift is over. The rest of this is not."
+	w.data.flags["slept_homecoming"] = true
+	w.data.scene = "town"
+	w.player().location = "home"
+	return text
 
 func town(w, id: String) -> String:
 	var who: String = w.data.player
@@ -147,121 +175,204 @@ func town(w, id: String) -> String:
 			w.relationship("nate", who, "trust", 6)
 			w.record(name + " visited Nate during his recovery.", [who, "nate"] if w.data.characters.nate.health >= 40 else [who], "hospital visit", false, "important", who)
 			if w.data.characters.nate.health < 40:
-				text = "St. Anne’s trauma floor smells of harsh iodine and lemon disinfectant. Nate is unconscious in Room 314 beneath a heavy gray blanket, his right arm elevated in an aluminum suspension cradle and swathed in thick white gauze. An automated IV pump hums beside the bed, dosing morphine into his wrist. The charge nurse speaks in a hushed murmur from the door: ‘Tendons were severed cleanly, but the vascular surgeon managed to reattach the arterial flow. He won’t be awake for hours.’ On the wall, a muted television flickers with personal injury lawyer commercials."
+				text = "St. Anne’s trauma ER is an absolute warzone: orderlies sprint past carrying blood bags, police radios scream from the hallway, and security guards wrestle an erratic patient off a crash cart. Nate lies unconscious in Room 314 beneath a foil emergency blanket, his right arm suspended in a titanium traction rig. An automated IV pump beeps frantically, flooding his veins with heavy painkillers. A nurse snaps: ‘Tendons were shredded to ribbons, but surgeons managed to reconnect the main arterial line. He's knocked out cold until morning.’"
 			elif w.knows("nate", "suggested Nate"):
-				text = "Nate is propped upright against three pillows, his skin waxy and gray. When you walk in, his jaw clenches so hard his temple pulses. His uninjured left hand grips the plastic bed rail until his knuckles blanch white. ‘Cole told me what you suggested on that incident form, Daniel,’ Nate whispers, his voice rasping from the intubation tube. ‘You wrote that I bypassed the guard to hit piece-rate? I took that graveyard shift because you swore on your family’s name the plant was safe. You stood five feet away while the press crushed my arm, and now you’re hanging me out to dry so Harold Voss doesn't dock your bonus.’ He turns his face toward the rain-streaked window and refuses to say another word."
+				text = "Nate is propped upright in bed, eyes blazing with furious adrenaline, monitors spiking beside his head. When you walk in, his knuckles turn white on the steel bed rail. ‘Cole told me what you suggested on that incident form, Daniel!’ Nate snarls, his voice scraping raw through his oxygen mask. ‘You told state inspectors I rigged the switch to hit piece-rate bonuses?! I took that graveyard suicide shift because you swore Mercer Works was legit! Forty tons of hydraulic iron mangled my arm, and you framed me to keep Harold Voss's syndicate happy?! Get the hell out of my room before I hit this emergency alarm!’"
+			elif w.flag("honest"):
+				text = "Nate is hooked to a dual-chamber IV rig, watching the evening news with razor-sharp intensity. When he spots you, a burst of manic, grateful relief hits his face. ‘Luis was just here, Dan!’ Nate rasps, grabbing your sleeve with his good arm. ‘He told me Voss ambushed you with corporate goons and you refused to sign their fraudulent walkthrough! You slapped the honest report on the table and blew the whistle on that rigged bypass wire! Voss has black-market contracts riding on Line 4... he’s going to come at you with a sledgehammer, Dan. But you saved my life and my family's name. I owe you forever.’"
 			else:
-				text = "Nate winces sharply as a spasm of phantom nerve pain shoots down his elevated forearm. Dried blood is still caked beneath his fingernails. ‘I keep replaying the sound in my head, Daniel,’ he whispers, his breath hitching. ‘The hydraulic valve hiss... the clatter of the sheet feed. I don’t remember seeing any wire on that guard. But Harold... Harold kept whispering to the paramedics while they were loading the stretcher that it was operator error. Why would Harold say that before the machine was even locked out?’ He looks at you with raw, searching eyes, begging for the truth."
+				text = "Nate winces as a jolt of phantom nerve agony rocks his shoulders, his vitals monitor beeping in erratic double-time. Dried grease and copper filings are still under his nails. ‘My ears won't stop ringing with that hydraulic explosion, Dan,’ he whispers, eyes wide with adrenaline. ‘The press cycled on its own before I even touched the foot-trip! Voss was whispering to the paramedics while they dragged me out, trying to coach their police statements. Why would Voss claim operator error before the hazard team even cleared the bay?!’"
 				w.record("Nate says he cannot remember the guard immediately before the accident.", [who, "nate"], "Nate’s recollection", true, "important", "nate")
 		"family":
 			travel(w, "home", "erin")
 			w.relationship("erin", who, "affection", 5)
 			if who == "daniel" and w.knows("erin", "knowingly misled"):
-				text = "Erin sits at the kitchen table with the household ledger, her pencil poised over the grocery line. When the kitchen door clicks, she looks up with dark circles under her eyes. ‘Have you been to the county safety station, Daniel? Did you correct what you wrote on Harold’s form?’"
+				text = "Erin is pacing the kitchen floor like a caged panther, shotgun shells and a stack of overdue bank notices sitting on the laminate table. The police scanner is squawking in the background. ‘Did you hit the county safety station, Daniel? Did you tear up that pack of lies you signed for Harold Voss?’"
 				if w.flag("corrected"):
-					text += " You tell her about meeting Cole and submitting the formal retraction. Erin lets out a long, trembling breath, her shoulders sagging as she reaches across the table to cover your hand with hers. ‘Thank God. We may lose the shift pay, Daniel, but at least we can look Nate in the eye.’"
+					text += " You show her the stamped retraction signed by Investigator Cole. Erin exhales a shaky, victorious breath, slamming the counter with fierce pride: ‘Damn right! Harold can send his repo thugs all he wants—our names are clean on the state record!’"
 					w.record(name + " told Erin the statement was corrected.", [who, "erin"], "direct conversation", false, "important", who)
+			elif who == "daniel" and w.knows("erin", "blamed Nate"):
+				text = "Erin glares at you from the sink, a butcher knife gripped tightly in her hand as she chops vegetables with furious force. ‘I just ran into Nate's mother outside the pharmacy, Daniel,’ she says, her voice shaking with righteous fury. ‘Harold Voss's cronies are already plastering the diner with rumors that Nate was reckless! She asked me why my husband would throw her boy under the bus! How am I supposed to look our neighbors in the face?!’"
+			elif who == "daniel" and (w.flag("hid_from_erin") or w.flag("partial_erin")):
+				w.data.flags.told_erin = true
+				w.data.flags.hid_from_erin = false
+				w.data.flags.partial_erin = false
+				text = "You pull the kitchen blinds shut and lay down the unvarnished reality: the 40-ton catastrophe, Harold’s syndicate panic, and the high-stakes battle over the official state safety filing.\n\n"
+				if w.flag("honest"):
+					w.relationship("erin", who, "trust", 12)
+					w.record(name + " confessed the full truth to Erin: he stood up to Harold and reported the bypassed guard.", [who, "erin"], "Daniel’s disclosure", false, "important", who)
+					text += "When you tell her you filed the unvarnished report documenting the illegal bypass wire, Erin grabs your collar and plants a fierce, breathless kiss on your cheek: ‘Hell yes, Daniel! Voss has federal inspectors breathing down his neck now! We might have to dodge his goons, but we’re taking him down together!’"
+				elif w.flag("lied"):
+					w.relationship("erin", who, "trust", -16)
+					w.record("Daniel admitted to Erin that he knowingly misled the incident report.", ["daniel", "erin"], "Daniel’s admission", false, "important", who)
+					text += "When you admit you signed Harold's whitewashed report, Erin knocks a mug off the counter, shattering it on the floor: ‘You signed off on a corporate cover-up?! Daniel, federal marshals will raid this house before the week is over! You get to Investigator Cole and recant before Harold leaves you holding the bag!’"
+				elif w.flag("blamed"):
+					w.relationship("erin", who, "trust", -20)
+					w.record("Daniel admitted to Erin that he blamed Nate on the incident report.", ["daniel", "erin"], "Daniel’s admission", false, "important", who)
+					text += "When you admit you scapegoated Nate on the official injury form, Erin recoils in pure disbelief: ‘You framed Nate Bell?! Daniel, have you lost your damn mind?! Nate’s lying in trauma surgery and you handed Voss the knife! Fix this right now or don't bother coming back through that door!’"
+				else:
+					w.relationship("erin", who, "trust", 6)
+					w.record(name + " explained to Erin that he deferred his formal statement.", [who, "erin"], "Daniel’s disclosure", false, "important", who)
+					text += "You tell her you bought time with a formal deferral. Erin nods grimly: ‘Smart move. You kept your head out of Voss's noose. Now we strike before his private investigators build a fake case against us.’"
+			elif who == "daniel" and w.flag("told_erin") and w.flag("honest"):
+				text = "Erin is loading a twelve-gauge shell into her father's vintage shotgun by the pantry, the scanner blaring county sheriff traffic. ‘Nate’s sister called from the clinic, Daniel,’ she says, grinning with fierce energy. ‘Word spread like wildfire through the shift crew that you told Voss to shove his bribe! The mill town is waking up, Dan. We’re not taking Voss's dirty racket lying down anymore.’"
 			elif w.knows("erin", "Nate"):
-				text = "Erin is folding clean laundry into a wicker basket, her movements tight and mechanical. ‘I saw Nate's sister at the market this morning,’ she says quietly, without looking up. ‘She said the doctors are still trying to save his fingers. Daniel... people at church are saying Mercer Works might shut down if the state finds safety violations. What happens to our mortgage if the plant locks the gates?’"
+				text = "Erin is tuning the kitchen radio between emergency broadcasts and local gossip. ‘Everyone in town is talking about Mercer Works, Daniel. Rumors say black SUVs with tinted windows were spotted outside the plant gates at dawn. If corporate pulls the plug on the contract, this whole valley goes up in smoke.’"
 			else:
-				text = "Erin is checking over Chloe’s school schedule, her cardigan pulled tight against the draft. ‘The heating oil delivery is scheduled for Thursday, Daniel. If we don’t have eighty dollars by Wednesday afternoon, they shut the line off.’ She pauses, watching your eyes. ‘You’ve been quiet since you came home from the plant. Is there something going on at Mercer Works that you aren't telling me?’"
+				var heating_paid = (w.data.flags.has("bills") and w.data.flags.bills.has("heating") and w.data.flags.bills.heating.status == "paid") or int(w.data.flags.get("paid_bills_day", -1)) >= 0
+				if heating_paid:
+					text = "Erin slams a paid utility slip onto the kitchen board. ‘At least the gas company won't cut the line while we fight off Voss's lawyers,’ she says, handing you a mug of scalding black coffee. ‘Now tell me what our next move is before Harold launches his counterstrike.’"
+				else:
+					text = "Erin taps an urgent red shutoff notice against the kitchen counter. ‘The utility company gave us till Wednesday to cough up the $80, Daniel, or they cut our heat in the middle of this freeze! Between your wild plant explosion and this overdue notice, our lives are turning into an action movie!’"
 			w.record(name + " spent time with Erin at home.", [who, "erin"], "routine", false, "working", who)
 		"investigate":
 			travel(w, "station", "cole")
 			if w.flag("photo") and who == "daniel" and not w.flag("evidence_shared"):
 				w.data.flags.evidence_shared = true
 				w.record("Cole received Daniel’s photograph of the bypassed guard.", [who, "cole"], "photograph", false, "important", who)
-				text = "Investigator Cole takes your phone and examines the high-resolution photo under his desk lamp. He zooms in on the copper wire twisted around the micro-switch, his eyes narrowing behind wire-rimmed spectacles. ‘Look at the twist on the copper,’ Cole notes calmly, tapping the screen with a mechanical pencil. ‘These aren't frayed ends. Someone used eight-inch linesman pliers to pinch the interlock closed. That’s deliberate bypass, not vibration wear. Keep the digital original safe, Daniel; this just became the centerpiece of our inquiry.’"
+				text = "Investigator Cole slams your phone onto his tactical desk magnifier, his eyes wide behind heavy spectacles. ‘Look at the crimp on that 12-gauge copper wire!’ Cole whistles, slapping a yellow legal pad. ‘That’s not wear-and-tear—that’s an intentional hotwire job done with eight-inch linesman clippers! Voss’s defense just went up in smoke! This photo is prime federal dynamite, Daniel!’"
+			elif w.flag("cage_searched") and not w.flag("cage_evidence_shared"):
+				w.data.flags.cage_evidence_shared = true
+				w.data.flags.evidence_shared = true
+				w.record(name + " gave Cole photographs of the cut wire and linesman pliers found in the maintenance cage.", [who, "cole"], "physical evidence", false, "important", who)
+				text = "Cole pulls the photos of the tool cage up on his dual monitors, grinning like an attack dog that caught the scent. ‘Look at those plier teeth—fresh copper filings and an identical 12-gauge insulation coil! This connects the tool cage directly to Line 4! We’ve got forensic ballistics on the wire cut! Harold Voss is cooked!’"
 			elif w.knows(who, "maintenance log") and not w.flag("log_shared"):
 				w.data.flags.log_shared = true
 				w.record(name + " shared the maintenance log findings with Cole.", [who, "cole"], "document disclosure", false, "important", who)
-				text = "Cole enters your detailed description of the maintenance book into his case notes. ‘A blank line where a pre-shift safety sign-off should be suggests supervisory negligence before Nate ever powered on Line 4. If Harold retroactively filled in that line after the accident, that moves this from an administrative violation to document tampering.’"
+				text = "Cole types furiously into the state terminal, slamming his fist onto the keyboard. ‘A blank pre-shift inspection line! If Voss doctored that log after Nate was loaded into the ambulance, that moves this straight from an administrative fine to a felony federal conspiracy! We’re impounding those books before sundown!’"
 			elif w.flag("case_open"):
-				text = "Cole gestures for you to sit across from his steel desk. A thick manila folder labeled *Mercer Works — Stamping Incident 11-04* lies open between you. ‘We have the mechanical logs, the EMS timeline, and Harold Voss’s initial filing. What we need is the human sequence: who was in the bay between 21:30 and 02:00, and who had access to the maintenance cage.’"
+				text = "Cole’s office looks like an FBI command center: wall-to-wall whiteboards covered in factory floor blueprints, shift rosters, and red yarn connecting Harold Voss to shell companies. Cole turns around holding an evidence bag: ‘Daniel! We’ve got phone records showing Voss placed three frantic calls to corporate headquarters at two in the morning. Give me the rest of the puzzle!’"
+			elif who == "daniel" and w.flag("honest"):
+				text = "Cole kicks open his filing cabinet with his boot and pulls out your intake dossier. ‘Your honest incident report hit my desk like a mortar shell at eight this morning, Daniel!’ Cole says, slamming the folder down. ‘In thirty years on this beat, I’ve never seen a supervisor stand up to a rogue plant manager like Voss. That document gives me the search warrants I need to tear Line 4 apart bolt by bolt!’"
 			else:
-				text = "Investigator Cole listens with the neutral, impassive patience of a career bureaucrat. He writes in shorthand on a yellow legal pad, pausing deliberately between questions to let the silence sit in the air. ‘In these investigations, people always try to tell me what they think happened. I don't deal in theories, Daniel. I deal in physical switches, signed inspection books, and verified timestamps.’"
-			text += " Cole watches your posture and eye contact with razor focus, cataloging every hesitation as he notes your words."
+				text = "Cole leans across his battered desk, chewing on a toothpick with unblinking intensity. Wiretap tape decks spin on the shelf behind him. ‘I don't care about corporate excuses, Daniel,’ Cole barks, pointing a steel ruler at you. ‘I care about who stripped the copper, who bypassed the hydraulic kill-switch, and whose fingerprints are on the maintenance cage! Talk to me!’"
+			text += " Cole watches your face like a polygraph machine, logging every word into his audio recorder."
 			w.record(name + " met Cole to discuss the investigation.", [who, "cole"], "direct conversation", false, "working", who)
 			if who == "daniel" and w.flag("delayed_statement") and not w.flag("statement_completed"):
 				w.data.flags.statement_completed = true
 				w.data.flags.honest = true
 				w.record("Daniel supplied his deferred statement: he saw the bypass but not who installed it.", [who, "cole"], "signed statement", false, "important", who)
-				text += " You pull out the formal statement you deferred overnight, handing over an unhedged, honest account of finding the bypassed wire on Line 4 without pointing unverified fingers."
+				text += " You slap down the formal statement you deferred overnight, delivering an unhedged, honest account of finding the rigged wire on Line 4 without pointing unverified fingers."
 		"submit_recording":
 			travel(w, "station", "cole")
 			w.data.flags.recording_shared = true
 			w.record("Cole received Daniel's voice memo of Harold ordering him to stop recording.", [who, "cole"], "voice recording", false, "important", "harold")
-			text = "Cole plugs your phone into his desktop speakers and presses play. Harold’s hurried, sweating voice crackles into the room: *‘We need to be consistent... thirty families on the street by Friday!’* Cole leans back in his swivel chair, his pen stopping in mid-air. He looks across the desk at you with a sharp, sober nod: ‘That is direct supervisory coercion during an active industrial casualty. It doesn't prove who twisted the wire, but it destroys Harold’s credibility before he even sits in this chair.’"
+			text = "Cole plugs your phone into high-output studio monitors and cranks the volume. Harold’s manic, sweating voice reverberates through the precinct: *‘We need to be consistent... corporate has deadlines... thirty families out on the street!’* Cole bursts into an explosive laugh, slamming both hands on the desk: ‘Listen to him sweat! That’s textbook felony witness tampering and extortion on tape! Voss is heading straight to federal lockup!’"
 		"rest":
 			travel(w, "home")
 			w.player().fatigue = 8
 			w.player().conditions.erase("exhausted")
 			w.player().health = mini(100, int(w.player().health) + 12)
-			text = "You wash the shop grease from your face, turn your phone face down on the bedside table, and pull the heavy quilt up to your chin. Exhaustion pulls you into a deep, uninterrupted sleep, letting your body heal and the adrenaline drain away. When you wake, cold morning sunlight is cutting across the floorboards."
+			var wake_hour = (int(w.data.minute) / 60) % 24
+			var wake_light = "harsh morning sunlight cuts across the floorboards like a spotlight."
+			if wake_hour >= 12 and wake_hour < 17:
+				wake_light = "afternoon sirens scream on route 9 as daylight blazes through the blinds."
+			elif wake_hour >= 17 and wake_hour < 21:
+				wake_light = "dusk is falling over Briar Glen, streetlights buzzing like high-voltage transformers."
+			elif wake_hour >= 21 or wake_hour < 5:
+				wake_light = "the night is pitch black, broken only by passing police cruisers."
+			text = "You barricade the front door, turn your phone to emergency alert only, and collapse onto the bed like a dropped engine block. Your body burns off the adrenaline in a deep, explosive sleep. When you wake, " + wake_light
 		"luis":
 			travel(w, "diner", "luis")
 			if w.data.relationships["luis:" + who].trust >= 50:
 				w.record("Luis says the maintenance log had a blank inspection line before the accident.", [who, "luis"], "Luis’s recollection", true, "important", "luis")
-				text = "Luis keeps his baseball cap pulled low, his dark eyes scanning the counter every time the diner bell chimes. He leans across the table, speaking in a low, intense murmur: ‘Listen to me, Daniel. At 21:45, before Nate clocked in, I went into the supervisor booth to grab spare earplugs. Harold had the red maintenance binder open with a pencil eraser in his hand. Line 4's Friday inspection was totally blank. He saw me and slammed the book shut. Harold knew that press had a malfunctioning interlock before Nate ever touched the foot pedal.’"
+				text = "Luis keeps his cap pulled low, checking the diner windows like a getaway driver. He slides a folded napkin across the table, whispering with intense urgency: ‘Daniel, listen! At 21:45, right before Nate clocked in, I slipped into the booth to grab earplugs. Voss was hunched over the red maintenance log with an electric eraser! The inspection line for Line 4 was totally blank! When he saw me, he slammed the ledger and stuffed it under his jacket! Harold knew the machine was rigged before Nate ever set foot in the bay!’"
 			else:
-				text = "Luis cradles his diner mug in two grease-stained hands, keeping his gaze firmly fixed on the black coffee. He answers your questions in cautious monosyllables, talking about overtime and weekend deer hunting. He's terrified of being blacklisted or fired, and he doesn't trust you enough yet to put his neck on the chopping block."
+				text = "Luis holds his coffee cup with two white-knuckled hands, checking his rearview mirror reflection in the window. He speaks in cryptic code, twitching whenever a pickup truck slows down outside. Harold's enforcers have the town terrified, and Luis isn't ready to stick his neck out until he knows you're bulletproof."
 				w.relationship("luis", who, "trust", 5)
 		"work":
 			travel(w, "plant")
 			w.data.flags["worked_" + who] = int(w.data.flags.get("action_start_day", day))
 			w.player().finances.cash += 112
-			text = "Seven grueling hours under buzzing fluorescent tubes on the secondary assembly line. You earn $112 in hard cash. Nobody speaks above a whisper; every worker on the floor is eyeing the yellow caution tape roping off Line 4 with cold dread."
+			var shift_context = ""
+			if w.flag("honest"):
+				shift_context = " Voss stares through the reinforced glass of his booth like a furious mob boss, while the floor crew flashes you quiet, synchronized victory salutes behind his back."
+			elif w.flag("blamed"):
+				shift_context = " Workers turn their backs and spit on the concrete as you walk past, whispering venom about how you threw Nate to the wolves to save your skin."
+			elif w.flag("lied"):
+				shift_context = " Voss gives you a cold, conspiratorial wink from the catwalk—a toxic bond sealed in forged ink."
+			text = "Seven insane hours in the roaring factory pit: 200-ton stamping presses thundering like artillery, sparks raining from overhead cranes, and forklifts burning rubber around tight corners. You pocket $112 in cash wages." + shift_context + " Yellow police tape flaps wildly over the blood-stained wreckage of Line 4."
 			w.record(name + " completed a paid shift at the plant.", w.witnesses("plant"), "routine", false, "working", who)
 			if w.player().fatigue > 78 and day >= 1:
-				return setup_danger(w, "industrial", text + " Your reflexes are shot and your hands are trembling slower than the steel feeder.")
+				return setup_danger(w, "industrial", text + " Your reflexes are completely blown and the screaming feeder belt is jerking straight toward your hands!")
 		"records":
 			travel(w, "plant")
 			w.data.flags["records_" + who] = true
 			var condition: String = w.data.objects.maintenance_log.condition
 			w.record(name + " saw the maintenance log: " + condition + ".", [who], "document inspection", false, "important", who)
-			text = "You slip into the supervisor's glass booth while Harold is away from his desk and pull the heavy red maintenance ledger from the metal shelf. " + ("The pre-shift inspection line for Line 4 is completely blank—no supervisor signature, no safety stamp. You pull out your phone and snap two clear photos of the blank page before returning the ledger." if condition == "intact" else "The pre-shift inspection line has been freshly filled in with fresh blue ink, claiming the guard was certified at 21:00. Under close inspection, you can see the faint indentations of erased pencil marks beneath the ink.")
+			text = "While Voss is distracted shouting into his landline, you vault into the supervisor's glass booth and rip open the metal file cabinet! " + ("Line 4's pre-shift inspection is dead blank—no safety stamp, no initials! You whip out your phone and snap rapid-fire flash photos before slamming the binder shut!" if condition == "intact" else "The pre-shift line is filled in with fresh smeared blue ink claiming 21:00 certification! But under the desk lamp, the white paper is scuffed raw where pencil marks were hastily erased! Voss forged it after the crash!")
+		"confront_harold":
+			travel(w, "plant", "harold")
+			w.relationship("harold", who, "trust", -15)
+			w.relationship("harold", who, "resentment", 18)
+			w.record(name + " confronted Harold about the bypassed guard and missing log entries.", [who, "harold"], "direct confrontation", false, "important", who)
+			if w.flag("lied"):
+				text = "You kick open the glass booth door, confronting Harold face-to-face! Harold slams down a heavy brass paperweight, his eyes wild with unhinged paranoia: ‘You signed that document, Daniel! We’re in this together! If federal agents kick that door in, I'll swear under oath you wired the bypass yourself! You stay in line or I'll bury you!’"
+			elif w.flag("honest"):
+				text = "You kick open the glass door and corner Harold against his mahogany desk! ‘You knew that switch was hotwired, Voss! Luis saw you erasing the inspection logs!’ Harold's face turns beet red, his neck veins bulging as he brandishes a nine-iron golf club from his umbrella stand: ‘You blew the whistle on me?! I have military supply deadlines! If corporate loses this contract, I will burn this entire town to the ground before I let you walk free!’"
+			else:
+				text = "You confront Harold in his office, demanding answers! Harold knocks a stack of blueprints onto the floor, slamming his fists down: ‘I kept thirty families fed with that line! You think some state pencil-pusher gives a damn about us?! You keep your mouth shut, Mercer, or things around here are going to get very dangerous for your family!’"
+		"search_cage":
+			travel(w, "plant")
+			w.data.flags.cage_searched = true
+			w.record(name + " searched the maintenance cage and found cut copper wire matching Line 4.", [who], "direct observation", false, "important", who)
+			text = "You pick the padlock on the chain-link tool cage with a bent cotter pin and dive under the heavy workbenches! Buried beneath oily rags, you hit paydirt: coiled spools of identical 12-gauge high-voltage wire and heavy linesman clippers with fresh copper filings caught in the jaws! You snap five high-res forensic photos with timestamps!"
+		"crew_stand":
+			travel(w, "diner", "luis")
+			w.relationship("luis", who, "trust", 12)
+			w.data.flags.crew_united = true
+			w.record(name + " met with the floor operators at the diner to form a united front.", [who, "luis"], "crew solidarity", false, "important", who)
+			if w.flag("honest"):
+				text = "You slide into the back booth of the Juniper Diner with Luis and six burly press operators. Tire irons and thermos bottles thud onto the table like a mob war council. Luis slams his fist down: ‘Dan stood up to Voss! Now it’s our turn! If Voss tries to fire one of us, we pull the main breakers and shut the entire factory down!’ The whole table roars in thunderous solidarity!"
+			elif w.flag("blamed"):
+				text = "You sit down with the floor crew in the back booth. Tense glares and clenched fists meet you across the table. You don’t flinch: ‘Harold tried to frame Nate, and he’s coming for the rest of you next with bribes and pink slips! If we stay divided, he picks us off one by one! If we stand united before Cole, we crush him!’ Luis slams his mug down: ‘Dan’s right. We strike together or we hang alone!’"
+			else:
+				text = "You rally the graveyard shift in the diner's back room. ‘Harold is going to interrogate everyone with cash bribes and termination threats,’ you tell them, your voice cutting through the clatter of silverware. ‘We form a united front right now. Cole gets the truth from all of us at once!’ Luis nods fiercely, pumping his fist: ‘The graveyard crew stands as one!’"
+		"nate_defense":
+			travel(w, "hospital", "nate")
+			w.relationship("nate", who, "trust", 14)
+			w.data.flags.nate_defended = true
+			w.record(name + " helped Nate prepare his testimony and promised to testify on his behalf.", [who, "nate"], "defense pact", false, "important", who)
+			if w.flag("blamed"):
+				text = "You sit on the edge of Nate's hospital bed, your voice trembling with raw regret: ‘Nate... Harold bullied me into signing an initial blame report. I lost my nerve, and I almost destroyed your life.’ Nate stares at you in shock, monitors beeping rapidly: ‘You what?!’ ‘I’m fixing it,’ you swear, handing him a legal pad with detailed timelines. ‘I’m going straight to Cole to retract everything and expose Voss’s extortion!’ Nate breathes heavily, then grips your hand: ‘You better make them pay, Dan.’"
+			elif w.flag("honest"):
+				text = "You spread out a yellow legal pad over Nate’s bed, plotting out the counter-strike against Harold's lies. ‘Voss is trying to claim you bypassed the interlock for speed bonuses,’ you tell him. Nate laughs bitterly: ‘I have three witnesses who saw Voss tinkering near the motor housing!’ You write it down: ‘Perfect. Cole is going to shred Voss's story into confetti.’ Nate’s eyes light up with fierce confidence."
+			else:
+				text = "You sit beside Nate, mapping out every minute leading up to the 02:10 disaster. ‘We need a rock-solid timeline before Voss feeds his version to state investigators,’ you tell him. Nate dictates the machine logs and lockout steps with razor-sharp precision: ‘Let’s nail this bastard to the wall.’"
+		"nate_rx":
+			travel(w, "hospital", "nate")
+			w.relationship("nate", who, "trust", 10)
+			w.data.flags.nate_rx_paid = true
+			w.record(name + " paid $35 cash at the hospital pharmacy for Nate's pain prescriptions.", [who, "nate"], "compassionate relief", false, "important", who)
+			text = "You sprint down to St. Anne’s 24-hour pharmacy, slap $35 cash on the counter, and grab the denied prescription of high-potency nerve blockers before the night manager can object. You bring the medicine up to Nate, who swallows the relief with tears streaming down his face: ‘Mercer Works canceled my insurance three hours after the accident, Dan. You literally saved my sanity.’"
 		"bills":
 			w.data.flags["paid_bills_day"] = day
 			var current_cash = int(w.player().finances.get("cash", 0))
 			if current_cash >= 80:
 				w.player().finances.cash -= 80
-				text = "You sit down at the kitchen counter and count out four crisp twenty-dollar bills to clear the $80 overdue heating notice. The furnace stays on for another month, but the stack of grocery money in your wallet shrinks to almost nothing."
+				w.record(name + " paid the $80 overdue heating bill in full with cash.", [who], "utility receipt", false, "important", who)
+				text = "You drop four crisp twenty-dollar bills at the municipal payment depot, slamming the door on the power company’s shutoff crew! The furnace roars back to life, pumping hot air through the vents, though your emergency stash is drained dry!"
 			else:
 				w.player().finances.cash = 0
 				w.player().finances.debt += (80 - current_cash)
-				text = "You scrape together every dollar bill in your wallet ($" + str(current_cash) + ") and apply the rest to your outstanding utility debt. The gas company agrees to keep the heat flowing, but the shortfall hangs over your head."
+				w.record(name + " applied remaining cash ($%d) toward the utility bill; balance moved to debt." % current_cash, [who], "utility receipt", false, "important", who)
+				text = "You throw down every last bill in your wallet ($" + str(current_cash) + ") and negotiate a desperate deferral on the rest! The gas valves stay open, but the balance hangs over your head like an anvil!"
 			if w.data.flags.has("bills") and w.data.flags.bills.has("heating"):
 				w.data.flags.bills.heating.status = "paid"
+			if w.data.characters.erin.alive and w.data.characters.erin.location == "home":
+				text += "\n\nErin watches the furnace fire up with a defiant smirk: ‘At least Voss can’t freeze us out of our own home!’"
 		"bills_credit":
 			w.data.flags["paid_bills_day"] = day
 			w.player().finances.debt += 80
 			if w.data.flags.has("bills") and w.data.flags.bills.has("heating"):
 				w.data.flags.bills.heating.status = "paid"
 			w.record(name + " charged the $80 heating bill to the credit card.", [who], "credit card payment", false, "important", who)
-			text = "You call the automated utility hotline and punch in your credit card numbers to clear the $80 heating bill. A mechanical tone confirms payment. The furnace stays running, but your card balance ticks up to $" + str(w.player().finances.debt) + "."
-		"truck_diy":
-			travel(w, "home")
-			w.data.flags.truck_fixed = true
-			w.player().finances.cash = maxi(0, int(w.player().finances.cash) - 35)
-			w.player().fatigue = mini(100, int(w.player().fatigue) + 35)
-			if not w.player().conditions.has("exhausted"):
-				w.player().conditions.append("exhausted")
-			w.record(name + " spent the afternoon replacing the truck alternator with a junkyard pull.", [who], "diy repair", false, "working", who)
-			text = "You spend three freezing hours on your back in the gravel driveway beneath the truck's rusted chassis, a flashlight clamped between your teeth. For $35 in scrapyard parts you save over a hundred dollars, but your knuckles are skinned raw and your lower back aches with leaden exhaustion."
-		"truck_shop":
-			travel(w, "road")
-			w.data.flags.truck_fixed = true
-			var cost = 140
-			if w.player().finances.cash >= cost:
-				w.player().finances.cash -= cost
-				text = "Jim at the county garage puts the truck on the hydraulic lift and has a remanufactured alternator installed in an hour. You count out $140 in cash. It leaves your wallet hurting, but your truck is roadworthy and your afternoon is saved."
-			else:
-				w.player().finances.debt += cost
-				text = "Jim swipes your credit card for the $140 repair. ‘Bearing was about thirty miles from seizing and throwing the serpentine belt,’ Jim says, wiping his hands. The truck is safe, but your debt increases."
-			w.record(name + " paid for professional alternator replacement at the garage.", [who], "mechanic repair", false, "working", who)
+			text = "You punch the credit card digits into the emergency hotline, stopping the utility shutoff with seconds to spare! The furnace kicks on with a deep rattle, pushing your debt balance to $" + str(w.player().finances.debt) + "!"
+			if w.data.characters.erin.alive and w.data.characters.erin.location == "home":
+				text += "\n\nErin listens to the automated receipt tone, shaking her head with a wry grin: ‘Maxing out plastic in the middle of a corporate war—classic Mercer style.’"
 		"matt":
 			travel(w, "diner", "matt")
-			text = "Your twenty-eight-year-old brother Matt is slumped in a corner vinyl booth at Juniper Diner, his eyes bloodshot and smelling of cheap cigarettes. An auto shop repair estimate sits on the laminate table like a death sentence. When you sit down, he laughs nervously and scratches the back of his neck, unable to look you in the eye: ‘Hey, Dan. Look... I know you’re dealing with hell at the plant. But the starter on my delivery van died cold on route 9. The tow driver took fifty bucks just to drag it here. If I can’t get parts by tomorrow, the courier firm cuts me loose.’"
+			text = "Matt is practically vibrating in the diner booth, gulping black coffee while police cruisers roll past outside. His hands are covered in grease and he's clutching a smoking alternator: ‘Dan! Thank God you made it! My delivery van broke down on route 9 with a cargo bed full of high-dollar commercial parts! The tow driver shook me down for fifty bucks, and if I don’t replace the starter before my dispatcher tracks the GPS, I’m dead meat!’"
 			w.relationship("matt", who, "affection", 6)
 			w.record("Matt told " + name + " his delivery van needs repairs.", [who, "matt"], "direct conversation", false, "working", "matt")
 		"correct":
@@ -270,16 +381,11 @@ func town(w, id: String) -> String:
 			w.data.flags["apology_" + who] = true
 			w.record("Daniel corrected his misleading statement to Cole; the original remains on file.", [who, "cole"], "signed correction", false, "important", who)
 			w.relationship("cole", who, "trust", -8)
-			text = "Cole pulls Harold’s submitted incident report from the folder and lays a formal retraction addendum beside it. You write down the complete truth about the bypassed guard and Harold’s coercion, signing your name with a steady hand. Cole stamps the paper with a heavy, administrative thud. ‘Your original statement stays in the state archive, Daniel. But this signed correction strips Harold of his shield. We now have a formal inquiry into supervisor intimidation.’"
+			text = "You march into Cole's office, snatch Harold's fraudulent injury report, and slap a signed, sworn retraction across the desk! Cole's eyes flash with electric focus as he slams the official state seal onto your correction: ‘This tears Harold’s defense to shreds! Voss is now the prime suspect in an active felony cover-up!’"
 		"doctor":
 			travel(w, "hospital")
 			w.player().health = mini(100, int(w.player().health) + 40)
-			text = "The doctor treats what you had been trying to ignore. Rest, fluids, a follow-up appointment. You leave in better shape than you arrived."
-		"drive":
-			travel(w, "road")
-			if w.player().fatigue > 65:
-				return setup_danger(w, "road", "You miss the turn you have taken a hundred times. Your eyes will not stay focused.")
-			text = "The county road winds past dark fields and a closed farm stand. You pull over for a while, then head back. Nothing happens. Sometimes that is what you need."
+			text = "An ER trauma doc stitches up your lacerations, pumps you full of broad-spectrum antibiotics and intravenous electrolytes, and wraps your battered ribs. You storm out of the trauma bay feeling like an armored tank ready for round two!"
 		"overtime":
 			travel(w, "plant")
 			w.data.flags["worked_" + who] = int(w.data.flags.get("action_start_day", day))
@@ -289,27 +395,14 @@ func town(w, id: String) -> String:
 				w.player().conditions.append("exhausted")
 			w.relationship("erin", who, "resentment", 8)
 			w.record(name + " worked an exhausting overnight double shift for $160 cash.", [who, "harold"], "overtime shift", false, "working", who)
-			text = "Eight brutal hours hauling stamped steel until your forearms burn. You pocket $160 and finish the shift exhausted, still on the factory floor. Those hours could not be spent at home."
+			text = "Eight grueling hours in a high-speed industrial meat grinder: double-time stamping, dodging flying metal burrs, and hauling steel billets under screaming emergency lights! You pocket $160 in crisp hundred and twenty-dollar bills, stumbling out at dawn trembling with pure exhaustion!"
 		"job":
+			travel(w, "home")
 			w.data.flags.job_accepted = true
 			w.player().finances.cash += 60
 			w.record("Erin attended a paid trial day for the job two towns away.", [who], "direct experience", false, "important", who)
-			text = "You call the number you have been keeping to yourself. A trial day, , and a commute you will have to think about. The decision finally belongs to you."
-		"neighbor":
-			travel(w, "diner")
-			var resident = "local_%d" % w.rng.randi_range(0, 20)
-			travel(w, "diner", resident)
-			var p: Dictionary = w.data.characters[resident]
-			text = p.name + " sits at the counter. "
-			var memories: Array = w.knowledge_for(resident)
-			if not memories.is_empty():
-				var k: Dictionary = memories.back()
-				text += "The conversation turns to something they remember: ‘" + k.fact + "’"
-				w.record(k.fact, [who], p.name + " relayed " + k.source, true, "working", resident)
-			else:
-				text += "You talk about the early frost and the diner’s broken heater. They ask how you are. You do not have to explain everything."
-			w.record(name + " shared a quiet conversation with " + p.name + ".", [who, resident], "routine", false, "working", who)
-	if w.player().health < 25 and id != "doctor":
+			text = "You call the confidential operations contact two towns away: a high-stakes trial run, $60 cash upfront, and a clean ticket out of Harold Voss's corrupt kingdom. The ball is in your court."
+	if w.player().health < 25:
 		return setup_danger(w, "medical", text + "\n\nThe pain is getting worse. Standing takes more effort than it should.")
 	return text
 
@@ -344,5 +437,7 @@ func danger(w, id: String) -> String:
 	w.record(w.player().name + " was injured in a " + kind + " incident after proceeding despite the hazard.", w.witnesses(w.player().location), "direct observation", false, "important", w.data.player)
 	w.data.flags.last_hazard = kind
 	if w.player().health <= 0:
+		w.player().alive = false
+		w.data.scene = "ended"
 		return "Disaster strikes in a brutal fraction of a second. Flesh tears, bone shatters, and searing agony consumes your vision before plunging into total blackness.\n\nFor a moment you think you can still get clear. Then the moment is gone.\n\nThe town does not stop with you."
 	return "Agony explodes through your nervous system as the trap violently snaps shut. You stagger backward, vomiting from shock and clutching your bleeding, battered body.\n\nIt happens faster than you expected. You get clear, hurt and shaking. Your body will carry this decision longer than the scene lasts."

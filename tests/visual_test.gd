@@ -29,6 +29,7 @@ func capture() -> void:
 	for id in ["stop", "witness", "truth", "tell"]:
 		view.director.act(view.world, id)
 	view.refresh()
+	view.finish_beats()
 	await process_frame
 	await process_frame
 	view.body_scroll.scroll_vertical = int(view.body_scroll.get_v_scroll_bar().max_value)

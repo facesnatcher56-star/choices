@@ -1,4 +1,5 @@
 extends RefCounted
+const Finances = preload("res://scripts/finances.gd")
 ## Player-facing motives and dilemmas. No hidden culprit knowledge or stat promises.
 
 static func connection(w, actor: String) -> String:
@@ -6,48 +7,48 @@ static func connection(w, actor: String) -> String:
 		var memories: Array = w.memories_for(w.data.player, actor)
 		return "" if memories.is_empty() else "What you remember: " + str(memories.back().text)
 	return {
-		"nate": "Nate is the man you vouched for when he needed this job. He trusted your word that the floor was safe. Now you can barely look at the arm that used to wave you over at shift change.",
-		"luis": "Luis covered for you when your first shift as supervisor went wrong. He could have had your job; instead, he taught you how to keep it. He is the one person on the floor you still trust to tell you the truth.",
-		"erin": "Erin is your wife, and the person you once planned to leave this town with. Every promotion became another reason to stay. She knows the difference between you being frightened and you shutting her out.",
-		"chloe": "Chloe is your fifteen-year-old daughter. She used to save you a seat beside the track, even when you missed the meet. Lately she has stopped asking whether you will come.",
-		"matt": "Matt is your little brother—the kid who used to follow you everywhere. Now he mostly calls when he is cornered. You miss being his brother instead of the person deciding whether he gets another chance.",
-		"harold": "Harold gave you the supervisor's keys and the pay rise that made staying seem sensible. He can still take both away. Tonight he wants to know what that bought him.",
-		"cole": "Cole is the workplace-safety investigator who will review your incident report. He does not owe you loyalty. Once he writes something down, Harold cannot quietly decide it never happened—and neither can you.",
-		"rebecca": "Rebecca is Erin's friend from before your marriage. Erin still calls her when she cannot talk to you. Accepting her help means letting someone who knows your family see how close it is to breaking."
+		"nate": "Nate is the kid you brought into the plant, promising him the line was solid. Forty tons of hydraulic iron mangled his arm, and now Voss’s syndicate wants to frame him. You owe him his life and his name.",
+		"luis": "Luis covered your back on day one when an unhinged die-press nearly leveled the warehouse. He’s the one brother on the floor ready to bring pipe wrenches to an executive boardroom war.",
+		"erin": "Erin is your ride-or-die wife who keeps the scanner buzzing and the shotgun ready. She refused to let Briar Glen break you, and she’s ready to take down Harold Voss by your side.",
+		"chloe": "Chloe is your fearless fifteen-year-old daughter chasing state track championships while police cruisers rip down the cul-de-sac. She needs to know her dad won't fold under pressure.",
+		"matt": "Matt is your wild younger brother, perpetually dodging repo squads with van-loads of racing nitrous and smoking starters. He’s chaos on four wheels, but he’s still blood.",
+		"harold": "Harold Voss is the espresso-fueled, mobbed-up plant manager who thinks a supervisor badge bought your soul. He has cartel-backed deadlines, and he will burn the town down before he goes to prison.",
+		"cole": "Cole is the state safety task force bulldog—wiretaps, crime boards, and search warrants ready to lock down Line 4. He doesn't take bribes, and he doesn't forget a lie.",
+		"rebecca": "Rebecca is your combat-ready neighbor down the ridge with a pump-action shotgun, a hot turkey casserole, and a fortified safehouse ready for your family."
 	}.get(actor, "")
 
 static func encounter_stakes(key: String) -> String:
 	return {
-		"school": "Chloe is offering to disappear from the week's problems. Taking that offer costs nothing today. Teaching her that her wishes always come last costs something else.",
-		"interview": "A job outside Mercer Works could give your family room to refuse Harold. It also means the future you kept postponing may happen without you leading it.",
-		"contradiction": "The photograph and your signed account cannot both tell the same story. Protecting the first lie may be easier right now than explaining it to the people you meant to protect.",
-		"loyalty": "The money is real. So is the signature he wants under a claim you cannot verify. Harold is offering relief now in exchange for something you may not be able to take back.",
-		"nate_bill": "You cannot give Nate his old life back. You can decide whether he has to face what comes next alone—and whether your help comes with an expectation of forgiveness.",
-		"matt_van": "The van is Matt's last income that does not come through you. Rescue him with money, spend your own time finding another way, or finally set a limit you both have to live with.",
-		"meeting": "These are the people who worked under your orders. A signature puts you beside them in public; helping anonymously may win the same relief without showing them where you stand.",
-		"neighbor": "Rebecca offers more than dinner: somewhere Chloe can stay if the house becomes unbearable. You have to let someone outside the family know you need that door open.",
-		"promise_due": "Chloe remembers your exact words. This decision will tell her whether your promises mean something when keeping them becomes inconvenient.",
-		"erin_offer": "This salary could end Harold's hold over the family. Erin is asking whether you will build that future with her, not whether she is allowed to want it.",
-		"harold_cornered": "The man who used to summon you to his office has come looking for you. He wants his problem to feel like your responsibility again.",
-		"strike_vote": "Luis is asking you to stand where management can see you. Your crew will remember who stayed beside them when being their supervisor stopped offering protection.",
-		"luis_statement": "Cole needs someone willing to put a name to the missing inspection. Luis needs next week's wages. Moving the case forward may expose the friend who kept you on your feet."
+		"school": "Chloe is gunning for state championships while sirens wail outside. Paying her bus fee keeps her dream alive amidst the madness.",
+		"interview": "A corporate operations salary two towns away could break Voss’s chokehold on your family forever—if you have the guts to take it.",
+		"contradiction": "The forensic wire photo and your signed incident report are on a direct collision course. Cole is ready to cuff you unless you come clean.",
+		"loyalty": "Harold is slapping $150 in crisp cash on the desk for a fraudulent safety sign-off. Fast money, but you’re signing a live grenade.",
+		"nate_bill": "Mercer Works canceled Nate’s medical insurance. You can step up with cash and emergency filings, or leave your boy to drown in medical debt.",
+		"matt_van": "Matt's delivery van broke down on route 9 loaded with hot cargo. Bail him out with cash, haul the crates in your pickup, or let him crash and burn.",
+		"meeting": "The floor crew has seized the diner back room with pipe wrenches, planning a wildcat strike. Your signature puts you at the front of the charge.",
+		"neighbor": "Rebecca is offering a warm fortress, hot food, and shotgun cover. Accepting means letting someone else into the fight.",
+		"promise_due": "The Springfield team bus is idling with the engine roaring. Keep your cash pledge to Chloe, or break her heart at the finish line.",
+		"erin_offer": "The courier contract is on the table—a golden ticket out of Briar Glen. Erin wants to build a new empire with you, right now.",
+		"harold_cornered": "Harold Voss is sweating bullets with a crowbar in his trench coat, begging you to help him torch the inspection ledger before the raid.",
+		"strike_vote": "The factory gate is an active warzone in the freezing sleet—burning drums, blocked scab buses, and megaphones blaring. Cast the deciding vote.",
+		"luis_statement": "Luis has the smoking-gun affidavit on Voss's document tampering. Handing it to Cole launches a federal assault on the plant."
 	}.get(key, "")
 
 static func response_stakes(key: String, id: String) -> String:
 	var stakes = {
-		"school": {"pay": "Give her one part of the week that still belongs to her.", "explain": "Keep her trust by admitting a limit; she may still miss the trip.", "promise": "Keep hope alive by giving your word. She will come back for it.", "dismiss": "End the conversation quickly; she hears that asking was the mistake."},
-		"interview": {"support": "Make her escape from dependence on the plant something you build together.", "listen": "Find out whether she wants a different job or a different life.", "cost": "Take her plan seriously enough to help make it possible.", "object": "Ask for stability at home at the cost of another delay in her life."},
-		"contradiction": {"admit": "Repair the record by admitting that you damaged it.", "uncertain": "Leave room to retreat, but give Cole another reason to doubt you.", "pressure": "Explain Harold's part without pretending it removes your own.", "pause": "Buy breathing room; leave the contradiction unresolved."},
-		"loyalty": {"sign": "$150 now. Your name becomes part of Harold's account.", "refuse": "Keep your name off the claim; lose the money and anger your boss.", "copy": "Take a blank copy home to review before signing, avoiding an immediate commitment.", "amend": "Offer a truthful signature; Harold has already tied the money to his wording."},
-		"nate_bill": {"money": "Offer practical relief without buying the right to be forgiven.", "forms": "Use your supervisor's knowledge to get Nate help the company has not explained.", "hear": "Let him be angry without making him reassure you.", "distance": "Protect what you have left for your own family; leave him facing this alone."},
-		"matt_van": {"lend": "Protect his independence with money your own family may need.", "ride": "Save the contract through shared routes; it costs your time instead of $120.", "decline": "Set an honest limit even if the van and his work go with it.", "blame": "Say the resentment out loud; risk losing more than the money he owes."},
-		"meeting": {"join": "Help win emergency pay and let the crew see your name beside theirs.", "quiet": "Help win relief while keeping your name off management's copy.", "wait": "Avoid committing before the findings; wages remain unresolved.", "leave": "Keep your distance from the dispute; the crew loses your support."},
-		"neighbor": {"accept": "Give the family a place to turn when you cannot hold everything together.", "share": "Tell the truth about needing help; open a door for Chloe.", "private": "Accept tonight's kindness while keeping the larger crisis behind your door.", "reject": "Keep your pride and privacy; close off the offered refuge."},
-		"promise_due": {"pay": "Make your word something she can count on again.", "sorry": "Break the promise without making her doubt that you made it.", "ask": "Hear what the broken promise meant to her.", "deny": "Protect yourself by asking your daughter to distrust her own memory."},
-		"erin_offer": {"celebrate": "Support a future where Harold cannot threaten all your income.", "practical": "Commit to your share of making her new life work.", "fear": "Risk an honest answer about the marriage.", "refuse": "Ask her to keep shrinking her life around yours; she may choose differently."},
-		"harold_cornered": {"refuse": "Keep the evidence intact and end his expectation of your loyalty.", "bargain": "Use his fear to ask for protection for the crew; he may promise nothing.", "leave": "Refuse the private negotiation without giving him another statement."},
-		"strike_vote": {"picket": "Stand publicly with the crew; push management toward a meeting.", "mediate": "Try to get both men into one room without joining the line.", "walk": "Choose the people waiting at home; accept the distance from your crew."},
-		"luis_statement": {"named": "Ask your friend to risk his job for a statement Cole can pursue.", "protect": "Keep Luis's name out of it; the log still needs independent corroboration.", "back_off": "Let him withdraw. Protect his immediate safety and give up this lead."}
+		"school": {"pay": "Slap down the cash and send her running for gold in Springfield.", "explain": "Give her the unvarnished truth about the emergency bills.", "promise": "Keep hope alive by giving your word to bring forty-five cash before the team bus rolls out.", "dismiss": "Shove the paper away and prioritize the industrial warzone."},
+		"interview": {"support": "Back her play to escape Voss's empire with full benefits.", "listen": "Hear her vision for a clean life away from the factory pit.", "cost": "Run the highway numbers and map the fuel budget together.", "object": "Demand she stay in town while the federal storm rages."},
+		"contradiction": {"admit": "Blow Voss's extortion wide open and clear your conscience.", "uncertain": "Claim adrenaline fogged your memory; Cole smells blood in the water.", "pressure": "Quote Voss's exact threats without taking the blame for the wire.", "pause": "Demand legal representation and shut down the interrogation."},
+		"loyalty": {"sign": "Pocket $150 in crisp fifties and legally ratify a crime.", "refuse": "Throw the dirty bribe in Harold's face and dare him to fire you.", "copy": "Snatch the rider to show your attorney, escaping his office with the proof.", "amend": "Deface the rider with red ink exposing the bypass and sign with defiance."},
+		"nate_bill": {"money": "Hand over $60 emergency cash so Nate can get his nerve blockers.", "forms": "Draft emergency state whistleblower trauma appeals to save him.", "hear": "Stand by his hospital bed while the fury and adrenaline pour out.", "distance": "Step back and leave Nate to battle the insurance sharks alone."},
+		"matt_van": {"lend": "Drop $120 to replace his starter and make him sign a contract.", "ride": "Haul his cargo in your pickup down route 9 at 80 mph.", "decline": "Refuse to bail out another reckless stunt with family money.", "blame": "Blast him for hauling hot cargo and running amateur stunts."},
+		"meeting": {"join": "Sign Daniel Mercer — Night Supervisor at the top of the strike petition.", "quiet": "Sharpen their labor-law clauses while keeping your name off the frontline.", "wait": "Preach caution and wait for federal inspection findings.", "leave": "Walk out on the crew to protect your supervisor standing."},
+		"neighbor": {"accept": "Open your doors to a hot feast and an armed ally.", "share": "Admit how close the family is to total financial ruin.", "private": "Take the casserole but keep the tactical situation private.", "reject": "Turn down armed help and hot food out of stubborn pride."},
+		"promise_due": {"pay": "Slap down the fifty and watch your daughter sprint for glory.", "sorry": "Look her in the eye and admit you couldn't beat the deadline.", "ask": "Sit on the porch steps and hear her fears about the family.", "deny": "Claim you never made a promise and accuse her of lying."},
+		"erin_offer": {"celebrate": "Spin her across the kitchen and pop the cork on a new life.", "practical": "Map out a high-speed commute and household battle plan.", "fear": "Ask if she’s using this job to leave you in the dust.", "refuse": "Demand she reject the offer and stay locked in Briar Glen."},
+		"harold_cornered": {"refuse": "Refuse to commit felony arson and watch Voss self-destruct.", "bargain": "Demand six months of full worker severance before talking.", "leave": "Walk out into the rain, leaving Voss alone with his madness."},
+		"strike_vote": {"picket": "Light the flare, weld the gates shut, and lead the wildcat strike!", "mediate": "Call for two hours of ceasefire to confront Harold Voss directly.", "walk": "Turn your truck around and abandon the blockade to the scabs."},
+		"luis_statement": {"named": "Take Luis's signed affidavit to Cole and drop the hammer on Voss.", "protect": "Keep Luis safe from the crosshairs and seize the records yourself.", "back_off": "Burn the evidence in a diner mug and let the lead turn to ashes."}
 	}
 	return str(stakes.get(key, {}).get(id, ""))
 
@@ -85,7 +86,7 @@ static func prepare(w, options: Array) -> Array:
 			c.why = opening.get(w.data.scene, {}).get(c.id, c.why)
 			continue
 		var id: String = c.id
-		c.secondary = id.begins_with("travel_") or id in ["bills", "bills_credit", "truck_diy", "truck_shop", "rest", "wait_open", "drive", "neighbor", "doctor", "work", "overtime"]
+		c.secondary = id.begins_with("travel_") or id in ["rest", "wait_open", "work", "overtime"]
 		if id.begins_with("encounter_"):
 			var key = id.trim_prefix("encounter_")
 			var reason = encounter_stakes(key)
@@ -95,46 +96,137 @@ static func prepare(w, options: Array) -> Array:
 			continue
 		match id:
 			"visit":
-				c.label = "Face Nate—the man you vouched for."
-				c.why = "He took this job on your word. You still have to meet his eyes."
+				if w.flag("blamed"):
+					c.label = "Face Nate at the trauma ward—the man you framed."
+					c.why = "You scapegoated Nate while he was on the operating table. Face the brother you betrayed."
+				elif w.flag("lied"):
+					c.label = "Face Nate at St. Anne's after signing Harold's cover-up."
+					c.why = "You signed Harold's fraudulent walkthrough to protect your badge. Meet the eyes of the kid who paid the price."
+				elif w.flag("honest"):
+					c.label = "Visit Nate at St. Anne's Hospital to plan the fight."
+					c.why = "You stood up to Voss and saved Nate's name on the state report. See how he is holding up in trauma recovery."
+				else:
+					c.label = "Drive to St. Anne’s Hospital to check on Nate."
+					c.why = "Nate took this graveyard shift on your word. You have to stand by his bedside."
 				c.secondary = w.knows("daniel", "visited Nate")
 			"family":
-				c.label = "Go back to Erin before the silence becomes your answer."
-				c.why = "Your wife can face bad news with you. She cannot stand beside a version of you she isn't allowed to know."
+				if w.flag("corrected"):
+					c.label = "Tell Erin you recanted the lie with Investigator Cole."
+					c.why = "Let your wife know you cleared your name from Harold's fraudulent report."
+				elif w.flag("told_erin"):
+					c.label = "Plan the counterstrike with Erin in the kitchen."
+					c.why = "Erin is locked and loaded with the scanner running; coordinate your next moves together."
+				elif w.knows("erin", "knowingly misled"):
+					c.label = "Talk to Erin about recanting your statement."
+					c.why = "She knows you signed Harold's cover-up; she wants to know if you're going to fix it."
+				elif w.knows("erin", "blamed Nate"):
+					c.label = "Face Erin about blaming Nate on the report."
+					c.why = "She was devastated by your admission; face the rift in your marriage."
+				else:
+					c.label = "Tell Erin the truth about the plant catastrophe."
+					c.why = "You kept the crisis from her last night; the silence between you is widening."
 				c.secondary = w.knows("daniel", "spent time with Erin")
 			"matt":
-				c.label = "Answer your brother's call for help."
-				c.why = "Matt needs a way to keep earning without you. You need to know this will not become another rescue."
+				c.label = "Answer your brother Matt's distress call at the diner."
+				c.why = "Matt broke down on route 9 with hot cargo and needs cash before repo muscle flags his GPS."
 				c.secondary = w.knows("daniel", "his delivery van needs repairs")
 			"luis":
-				c.label = "Find out what Luis is afraid to put on paper."
-				c.why = "He helped you become supervisor. His recollection could challenge Harold's paperwork."
+				c.label = "Meet Luis Ortega at the diner to crack the case."
+				c.why = "Luis caught Voss in the supervisor booth erasing safety logs; his testimony is dynamite."
 				c.secondary = w.knows("daniel", "Luis says the maintenance log")
+			"confront_harold":
+				if w.flag("lied"):
+					c.label = "Storm Harold Voss's booth about the fraudulent report."
+					c.why = "Demand to know what his promises are worth now that federal agents are circling the plant."
+				elif w.knows("daniel", "maintenance log"):
+					c.label = "Confront Harold Voss about the erased inspection line."
+					c.why = "Force Harold to defend his cover-up face-to-face before corporate attorneys step in."
+				elif w.flag("honest"):
+					c.label = "Confront Harold Voss over his threats of retaliation."
+					c.why = "Harold is furious that you documented the bypassed guard; face him down on the floor."
+				else:
+					c.label = "Kick open Harold Voss's booth door and demand answers."
+					c.why = "Corner Harold face-to-face about the hotwired guard before corporate goons arrive."
+			"search_cage":
+				c.label = "Pick the tool cage lock to seize the wire clippers."
+				c.why = "Recover the linesman pliers and copper off-cuts matching Line 4 before Harold destroys them."
+			"crew_stand":
+				if w.flag("honest"):
+					c.label = "Rally the floor operators into an underground strike front."
+					c.why = "You stood up for Nate on the report; mobilize the crew in solidarity before Harold intimidates them."
+				elif w.flag("blamed"):
+					c.label = "Face the angry shift crew in the diner's back booth."
+					c.why = "The shift crew knows Nate was hurt; face your coworkers and prove whose side you're on."
+				else:
+					c.label = "Rally the floor operators into an underground strike front."
+					c.why = "Build collective solidarity among the shift workers before Harold intimidates them."
+			"nate_defense":
+				if w.flag("blamed"):
+					c.label = "Rush to Nate's bedside and confess the scapegoat report."
+					c.why = "Apologize to Nate for succumbing to Harold's pressure and promise to retract it with Cole."
+				elif w.flag("honest"):
+					c.label = "Arm Nate with legal testimony for Cole's interrogation."
+					c.why = "Coordinate Nate's timeline for Cole's interrogation and give him your sworn word as supervisor."
+				else:
+					c.label = "Help Nate build a bulletproof defense against Voss."
+					c.why = "Prepare Nate for Cole's interrogation and give him your sworn word as supervisor."
+			"nate_rx":
+				c.label = "Rush $35 cash to St. Anne’s pharmacy for Nate's pain meds."
+				c.why = "Mercer's insurer denied coverage; paying out-of-pocket spares Nate agonizing nerve pain."
 			"records":
-				c.label = "Check the log before Harold's account becomes the only one."
-				c.why = "Your shift is in that book. Missing paperwork could challenge the story being built around Nate."
+				c.label = "Raid the supervisor booth to photograph the red log book."
+				c.why = "Photograph the blank or erased inspection line before Harold swaps the binder."
 			"investigate":
-				c.label = "Put your account where Harold cannot quietly erase it."
-				c.why = "Cole can act on what you hand over. Once it is in the file, you cannot control where it leads."
+				if w.flag("delayed_statement") and not w.flag("statement_completed"):
+					c.label = "Deliver your deferred sworn statement to Investigator Cole."
+					c.why = "Hand over your formal supervisor testimony on Line 4 directly to the state inquiry."
+				elif w.flag("photo") and not w.flag("evidence_shared"):
+					c.label = "Slap the forensic bypass wire photo onto Cole's desk."
+					c.why = "Give the state investigator physical proof that Line 4's guard was deliberately wired open."
+				elif w.flag("cage_searched") and not w.flag("cage_evidence_shared"):
+					c.label = "Deliver the tool cage wire and plier evidence to Cole."
+					c.why = "Hand over timestamped photos of the cut copper wire and pliers found in the maintenance cage."
+				elif w.knows("daniel", "maintenance log") and not w.flag("log_shared"):
+					c.label = "Blow the whistle on Harold's log book tampering to Cole."
+					c.why = "Tell Cole about the blank pre-shift inspection line and the erased marks."
+				elif w.flag("honest"):
+					c.label = "Coordinate the state safety inquiry with Investigator Cole."
+					c.why = "Cole received your honest incident report; plan the federal inspection raid on Line 4."
+				else:
+					c.label = "Enter your testimony into Cole's official federal file."
+					c.why = "Cole can act on what you hand over. Once it is in the file, Voss cannot touch it."
 				c.why += " Takes 90 minutes out of the day you normally sleep before your night shift."
-				c.secondary = w.knows("daniel", "met Cole") and not (w.flag("photo") and not w.flag("evidence_shared")) and not (w.knows("daniel", "maintenance log") and not w.flag("log_shared")) and not (w.flag("delayed_statement") and not w.flag("statement_completed"))
+				c.secondary = w.knows("daniel", "met Cole") and not (w.flag("photo") and not w.flag("evidence_shared")) and not (w.flag("cage_searched") and not w.flag("cage_evidence_shared")) and not (w.knows("daniel", "maintenance log") and not w.flag("log_shared")) and not (w.flag("delayed_statement") and not w.flag("statement_completed"))
 			"correct":
-				c.label = "Tell Cole you lied before the lie becomes your life."
-				c.why = "The old statement stays on file. So does the fact that you chose to correct it."
+				c.label = "Slap down a sworn retraction with Cole and blow Voss's cover."
+				c.why = "The old statement stays on file, but this signed correction strips Harold of his shield."
+			"bills":
+				var cash_avail = Finances.available_cash(w)
+				if cash_avail >= 80:
+					c.label = "Drop $80 cash at the utility depot to keep the heat blazing."
+					c.why = "Clears the overdue utility notice immediately with cash, stopping the shutoff crew."
+				else:
+					c.label = "Throw all remaining cash ($%d) at the overdue heating bill." % cash_avail
+					c.why = "Applies every dollar in your wallet to keep the heat flowing; the balance rolls into debt."
+				c.secondary = false
+			"bills_credit":
+				c.label = "Charge the $80 heating bill to credit to keep the furnace roaring."
+				c.why = "Settles the immediate utility notice while preserving cash, increasing card debt to $%d." % (Finances.total_debt(w) + 80)
+				c.secondary = false
 			"rest":
 				var clock = int(w.data.minute / 60) % 24
 				if clock < 6 or clock >= 21:
-					c.label = "Turn in and sleep until morning."
+					c.label = "Barricade the front door and sleep until morning."
 					c.why = "Rest in your own bed to clear your head, restore your energy, and wake to morning light."
 				else:
-					c.label = "Get some sleep before the next night shift." if clock < 18 else "Turn in and get a full night's sleep."
+					c.label = "Crash for a few hours before the next night shift." if clock < 18 else "Turn in and sleep off the adrenaline."
 					c.why = "Sleep restores your health, clears your exhaustion, and wakes you to morning light."
 			"work":
-				c.label = "Take the shift. Buy room to refuse Harold later."
-				c.why = "$112 for seven hours at the plant. Money gives you options; exhaustion takes them away."
+				c.label = "Survive a grueling 7-hour shift on the screaming factory floor ($112)."
+				c.why = "$112 cash wages. Money gives you ammunition; exhaustion takes it away."
 			"overtime":
-				c.label = "Take Harold's extra hours and the money that comes with them."
-				c.why = "$160 for eight hours. You come back exhausted, and Erin absorbs another absence."
+				c.label = "Take Harold's high-octane 8-hour double shift in the iron pit ($160)."
+				c.why = "$160 cash wages. You come back exhausted, and Erin absorbs another absence."
 	# Recovery belongs up front when it is urgent, or when the chapter has gone quiet.
 	var has_lead = options.any(func(c): return not c.secondary)
 	var has_rest = options.any(func(c): return c.id == "rest")

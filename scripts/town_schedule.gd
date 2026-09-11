@@ -52,19 +52,20 @@ static func action_open(w, c: Dictionary, minute: int, catalogue: Dictionary) ->
 		return encounter_open(w, key, catalogue[key], minute + duration)
 	if id.begins_with("travel_"):
 		return place_open(id.trim_prefix("travel_"), minute + duration)
-	var actor: String = {"family": "erin", "visit": "nate", "matt": "matt", "luis": "luis", "investigate": "cole", "correct": "cole", "submit_recording": "cole"}.get(id, "")
+	var actor: String = {"family": "erin", "visit": "nate", "matt": "matt", "luis": "luis", "investigate": "cole", "correct": "cole", "submit_recording": "cole", "confront_harold": "harold", "crew_stand": "luis", "nate_defense": "nate"}.get(id, "")
 	if actor == "erin" and w.flag("job_started") and (minute / 1440) % 7 < 5 and not within(minute, duration, 17 * 60, 22 * 60):
 		return false
 	if not actor.is_empty() and not person_available(actor, minute, duration):
 		return false
 	match id:
-		"records", "truck_diy", "truck_shop", "job": return within(minute, duration, 8 * 60, 17 * 60, true)
+		"records", "job", "confront_harold", "search_cage": return within(minute, duration, 8 * 60, 18 * 60, true)
+		"crew_stand": return within(minute, duration, 13 * 60, 22 * 60)
+		"nate_defense": return within(minute, duration, 10 * 60, 20 * 60)
+		"nate_rx": return within(minute, duration, 8 * 60, 20 * 60)
 		"work", "overtime":
 			# Night shift starts Sunday–Thursday, 21:00–23:00; it may finish next day.
 			var weekday = (minute / 1440) % 7
 			return weekday in [6, 0, 1, 2, 3] and minute % 1440 >= 21 * 60 and minute % 1440 <= 23 * 60
-		"neighbor": return within(minute, duration, 8 * 60, 21 * 60)
-		"drive": return within(minute, duration, 7 * 60, 21 * 60)
 	return true
 
 static func schedule_anchor(w) -> Dictionary:
@@ -167,7 +168,7 @@ static func filter_actions(w, options: Array, catalogue: Dictionary) -> Array:
 			blocked.append(c)
 	# Only append wait_open if there are NO primary daytime activities available.
 	# Never clutter the player's choices with sleep/wait when they have active leads to pursue.
-	var active_tasks = result.filter(func(c): return not c.id.begins_with("travel_") and not c.id in ["rest", "bills", "bills_credit"])
+	var active_tasks = result.filter(func(c): return not c.id.begins_with("travel_") and not c.id in ["rest", "bills", "bills_credit", "chaos_next"])
 	if active_tasks.is_empty() and not blocked.is_empty():
 		var next_minute = -1
 		for probe in range((int(w.data.minute) / 5 + 1) * 5, int(w.data.minute) + 8 * 1440 + 1, 5):

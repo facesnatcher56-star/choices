@@ -3,12 +3,16 @@ const World = preload("res://scripts/world.gd")
 const Director = preload("res://scripts/director.gd")
 const StoryTheme = preload("res://scripts/story_theme.gd")
 const Finances = preload("res://scripts/finances.gd")
+const NarrativePacer = preload("res://scripts/narrative_pacer.gd")
 const INK = StoryTheme.INK
 const MUTED = StoryTheme.MUTED
 const GOLD = StoryTheme.GOLD
 
 var world = World.new()
 var director = Director.new()
+var pacer = NarrativePacer.new()
+var continue_button: Button
+var beat_indicator: Label
 var page = 0
 var choice_box: VBoxContainer
 var narrative: RichTextLabel
@@ -249,6 +253,9 @@ func build_finance_sidebar() -> void:
 	bills_outer.add_child(finance_settled_container)
 
 func update_finance_sidebar() -> void:
+	finance_sidebar.visible = world.data.scene != "moon"
+	if world.data.scene == "moon":
+		return
 	var sched = preload("res://scripts/town_schedule.gd").schedule_anchor(world)
 	if schedule_day_label:
 		schedule_day_label.text = str(sched.get("day_text", "DAY 1 · MONDAY"))
@@ -426,7 +433,7 @@ func build_screen() -> void:
 
 	var top_bar = HBoxContainer.new()
 	header.add_child(top_bar)
-	var brand = label("ONE BAD WEEK", 16, StoryTheme.GOLD, 700)
+	var brand = label("PLEASE DO NOT FEED THE MOON", 16, StoryTheme.GOLD, 700)
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top_bar.add_child(brand)
 	finance_label = label("", 16, MUTED)
@@ -490,11 +497,40 @@ func build_screen() -> void:
 	narrative.add_theme_font_size_override("italics_font_size", 24)
 	narrative.add_theme_font_size_override("bold_italics_font_size", 24)
 	narrative.add_theme_constant_override("line_separation", 14)
+	narrative.gui_input.connect(func(ev):
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT and continue_button.visible:
+			advance_narrative_beat())
 	body.add_child(narrative)
 
 	var breath = Control.new()
 	breath.custom_minimum_size.y = 8
 	body.add_child(breath)
+
+	beat_indicator = Label.new()
+	beat_indicator.add_theme_font_override("font", StoryTheme.font_ui(600))
+	beat_indicator.add_theme_font_size_override("font_size", 12)
+	beat_indicator.add_theme_color_override("font_color", StoryTheme.GOLD)
+	beat_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	beat_indicator.hide()
+	body.add_child(beat_indicator)
+
+	continue_button = Button.new()
+	continue_button.text = "Continue  ▾"
+	continue_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	continue_button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	continue_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	continue_button.add_theme_font_override("font", StoryTheme.font_ui(600))
+	continue_button.add_theme_font_size_override("font_size", 22)
+	continue_button.add_theme_color_override("font_color", INK)
+	continue_button.add_theme_color_override("font_hover_color", Color("fff7e6"))
+	continue_button.add_theme_color_override("font_focus_color", Color("fff7e6"))
+	continue_button.add_theme_stylebox_override("normal", StoryTheme.choice_style(Color("131e24"), StoryTheme.GOLD))
+	continue_button.add_theme_stylebox_override("hover", StoryTheme.choice_style(Color("1a2b34"), StoryTheme.GOLD))
+	continue_button.add_theme_stylebox_override("pressed", StoryTheme.choice_style(Color("223642"), StoryTheme.GOLD))
+	continue_button.add_theme_stylebox_override("focus", StoryTheme.choice_style(Color("131e24"), StoryTheme.GOLD))
+	continue_button.pressed.connect(advance_narrative_beat)
+	continue_button.hide()
+	body.add_child(continue_button)
 
 	choice_box = VBoxContainer.new()
 	choice_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -611,24 +647,23 @@ func refresh() -> void:
 	var p: Dictionary = world.player()
 	var minute = int(world.data.minute) % 1440
 	context_label.text = "%s  ·  %s  ·  Day %d, %s" % [p.name, world.data.locations[p.location], int(world.data.minute / 1440) + 1, preload("res://scripts/town_schedule.gd").stamp(world.data.minute)]
-	finance_label.text = Finances.status_line(world)
+	finance_label.text = "" if world.data.scene == "moon" else Finances.status_line(world)
 	update_finance_sidebar()
 	status_label.hide()
 	title_label.text = {"accident": "Before the sirens", "pressure": "A consistent story", "statement": "For the record", "homecoming": "The kitchen light", "danger": "A moment to step back", "town": "Life goes on"}.get(world.data.scene, "The story continues")
 	if world.data.scene == "encounter":
 		title_label.text = director.encounters.catalogue()[world.data.flags.encounter].title
+	if world.data.scene == "moon":
+		title_label.text = preload("res://scripts/moon_data.gd").NODES[world.data.flags.moon_node].title
+		context_label.text = "Alex Vale  ·  The Hotel Nobody"
 
-	# Flowing continuous narrative stream with color-coded dialogue and easy-on-the-eyes prose
-	var stream: Array[String] = []
-	for i in range(world.data.story_log.size()):
-		var entry: Dictionary = world.data.story_log[i]
-		if i == world.data.story_log.size() - 1:
-			newest_story_paragraph = "\n\n".join(stream).count("\n") + (2 if not stream.is_empty() else 0)
-		if entry.has("action") and not str(entry.action).is_empty():
-			stream.append("[color=" + StoryTheme.GOLD_COLOR + "]› [i]" + entry.action + "[/i][/color]\n")
-		var formatted: String = StoryTheme.format_narrative(entry.text)
-		stream.append(formatted)
-	narrative.text = "\n\n".join(stream)
+	# Paced narrative delivery (2-3 sentences at a time)
+	var last_entry: Dictionary = world.data.story_log.back() if not world.data.story_log.is_empty() else {}
+	var action_header = ""
+	if last_entry.has("action") and not str(last_entry.action).is_empty():
+		action_header = "[color=" + StoryTheme.GOLD_COLOR + "]› [i]" + str(last_entry.action) + "[/i][/color]"
+	var raw_text: String = str(last_entry.get("text", ""))
+	pacer.setup(raw_text, action_header)
 
 	for c in choice_box.get_children():
 		choice_box.remove_child(c)
@@ -642,7 +677,7 @@ func refresh() -> void:
 	for i in range(live_choices.size()):
 		var c: Dictionary = live_choices[i]
 		var b = Button.new()
-		b.text = "›  " + c.label + "\n" + duration(c.minutes) + " · " + c.why
+		b.text = "›  " + c.label
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -659,7 +694,37 @@ func refresh() -> void:
 		b.pressed.connect(choose.bind(c.id))
 		choice_box.add_child(b)
 	alternate_button.visible = has_practical
-	alternate_button.text = "Hide travel and practical matters" if show_practical else "Travel and practical matters"
+	alternate_button.text = "Hide secondary matters" if show_practical else "Secondary matters"
+
+	render_current_beat()
+
+func render_current_beat() -> void:
+	var beat_text = pacer.current_beat()
+	narrative.text = StoryTheme.format_narrative(beat_text)
+
+	if not pacer.is_finished():
+		continue_button.show()
+		beat_indicator.text = "BEAT %d OF %d  ·  [SPACE / ENTER] TO CONTINUE" % [pacer.beat_number(), pacer.total_beats()]
+		beat_indicator.show()
+		choice_box.hide()
+		alternate_button.hide()
+	else:
+		continue_button.hide()
+		beat_indicator.hide()
+		choice_box.show()
+		var has_practical = director.choices(world).any(func(c): return c.get("secondary", false))
+		alternate_button.visible = has_practical
+
+func advance_narrative_beat() -> void:
+	if pacer.advance():
+		render_current_beat()
+		body_scroll.scroll_vertical = 0
+	else:
+		render_current_beat()
+
+func finish_beats() -> void:
+	pacer.finish_all()
+	render_current_beat()
 
 func duration(minutes: int) -> String:
 	return "%dm" % minutes if minutes < 60 else "%dh %02dm" % [int(minutes / 60), minutes % 60]
@@ -738,14 +803,16 @@ func show_panel(mode: String) -> void:
 		panel_text.add_theme_font_size_override("normal_font_size", 19)
 	match mode:
 		"menu":
-			panel_title.text = "One Bad Week"
+			panel_title.text = "Please Do Not Feed the Moon"
 			var p: Dictionary = world.player()
 			menu_summary.text = "%s · %s, %d\n\nHealth %d   ·   Fatigue %d\nCash $%d   ·   Debt $%d" % [p.name, p.occupation, p.age, p.health, p.fatigue, p.finances.cash, p.finances.debt]
+			if world.data.scene == "moon":
+				menu_summary.text = "Alex Vale · The Hotel Nobody\n" + str(preload("res://scripts/moon_data.gd").NODES[world.data.flags.moon_node].title)
 		"debug":
 			panel_title.text = "World inspector · canonical spoilers"
 			render_debug()
 		"people":
-			panel_title.text = "People of Briar Glen"
+			panel_title.text = "People of the hotel" if world.data.scene == "moon" else "People of Briar Glen"
 			var text = "The people whose lives cross yours.\n\n"
 			for id in world.data.characters:
 				var p: Dictionary = world.data.characters[id]
@@ -802,7 +869,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			show_panel("menu")
 		get_viewport().set_input_as_handled()
 	elif not panel.visible and not confirm.visible:
-		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
+		if continue_button.visible and (event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER):
+			advance_narrative_beat()
+			get_viewport().set_input_as_handled()
+		elif choice_box.visible and event.keycode >= KEY_1 and event.keycode <= KEY_9:
 			var index = event.keycode - KEY_1
 			if index < live_choices.size():
 				choose(live_choices[index].id)

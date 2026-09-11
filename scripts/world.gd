@@ -3,12 +3,15 @@ const Seed = preload("res://scripts/seed.gd")
 var data: Dictionary
 var rng = RandomNumberGenerator.new()
 
-func _init(seed_number: int = 0) -> void:
+func _init(seed_number: int = 0, legacy: bool = false) -> void:
 	rng.seed = seed_number if seed_number != 0 else int(Time.get_unix_time_from_system())
 	data = Seed.create(rng.seed)
+	if not legacy:
+		preload("res://scripts/moon_story.gd").configure(self)
+		return
 	record("Nate was found unconscious beside a bypassed machine guard. The person responsible is unknown.", ["daniel", "harold", "luis"], "direct observation", false, "important")
 	record("Luis noticed a blank inspection line in the maintenance log before the shift.", ["luis"], "personal observation", false, "important", "luis")
-	story("Monday, 2:10 AM. Line 4's forty-ton stamping press is still cycling. Nate Bell is on the concrete beneath it, breathing in shallow, wet gasps. Blood is spreading from his torn sleeve. A copper wire holds the safety guard open.\n\nYou are Daniel Mercer, the night supervisor. Nate got this job because you vouched for him. You told him the crew would look after him. Now your phone feels slippery in your hand.\n\nLuis Ortega reaches the other side of the machine. On your first night in charge, Luis caught a mistake that could have cost you the promotion. He never told Harold. You have trusted him ever since.\n\nThe fire door slams. Harold Voss, the manager who gave you the supervisor's keys, stops at the sight of the wire.\n\n‘That guard wasn't bypassed when I left.’\n\nYou don't know who fitted it. You know Nate is still within reach of the press, and the man who controls your pay has looked at the guard before looking at him.")
+	story("Monday, 2:10 AM. Nate Bell is trapped beneath Line 4's forty-ton stamping press as Mercer Works' illegal turbo-press conversion goes completely supernova! The massive hydraulic ram is shrieking like an F-16 afterburner, blowing high-voltage lightning bolts straight through the roof! Black hydraulic oil is geysering across the concrete like a hurricane while a twisted piece of military-grade copper wire holds the emergency interlock wide open!\n\nYou are Daniel Mercer, the graveyard supervisor. Nate got this suicide shift because you vouched for him, swearing the plant wasn't a crooked death trap. Now air-raid sirens are howling, secondary transformer banks are popping like grenades, and your radio is shrieking with frantic static.\n\nAcross the burning bay, Luis Ortega lunges for the auxiliary kill switch. On your first night as supervisor, Luis covered your back when an unhinged die-press nearly leveled the warehouse. You have trusted him ever since.\n\nThe reinforced blast doors kick open with a deafening crash! Harold Voss, the manic plant manager fueled by quad-shot espressos and pure terror, skids across the oil slick brandishing a crowbar, screaming over the sirens:\n\n‘That guard wasn't bypassed when I left! Corporate has cartel-backed deadlines on these combat parts! If inspectors see this, hit squads will level Briar Glen!’\n\nYou don't know who wired the switch. You only know forty tons of crushing steel are cycling overhead, Nate is trapped, and all hell is breaking loose!")
 
 func player() -> Dictionary:
 	return data.characters[data.player]
@@ -88,6 +91,9 @@ func load_world(path: String = "user://world.json") -> Error:
 	if not valid_save(parsed):
 		return ERR_FILE_CORRUPT
 	data = parsed
+	if data.flags.get("moon_story", false):
+		rng.state = int(data.rng_state)
+		return OK
 	data.locations.merge({"station": "Workplace safety office", "school": "Briar Glen High School", "office": "Millfield accounting office"}, true)
 	data.characters.cole.name = "Investigator Cole"
 	data.characters.cole.occupation = "Workplace safety investigator"
@@ -111,7 +117,11 @@ func valid_save(d: Variant) -> bool:
 			return false
 	if not d.get("rng_state") is String or not d.rng_state.is_valid_int():
 		return false
-	if not d.get("scene") in ["accident", "pressure", "statement", "homecoming", "town", "danger", "encounter", "ended"] or not d.characters.has(d.get("player", "")) or d.story_log.is_empty():
+	if not d.get("scene") in ["moon", "accident", "pressure", "statement", "homecoming", "town", "danger", "encounter", "chaos", "ended"] or not d.characters.has(d.get("player", "")) or d.story_log.is_empty():
+		return false
+	if d.scene == "moon" and (not d.flags.get("moon_story", false) or not preload("res://scripts/moon_data.gd").NODES.has(d.flags.get("moon_node", ""))):
+		return false
+	if d.scene == "chaos" and (not number(d.flags.get("chaos_chapter", 0)) or int(d.flags.get("chaos_chapter", 0)) < 0 or int(d.flags.get("chaos_chapter", 0)) >= preload("res://scripts/chaos_story.gd").chapters().size()):
 		return false
 	if d.scene == "encounter" and not preload("res://scripts/encounters.gd").new().catalogue().has(d.flags.get("encounter", "")):
 		return false
